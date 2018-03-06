@@ -11,8 +11,8 @@ module.exports = function(app) {
   
   app.route('/projects/:projectsId')
   .get(projects.read_a_projects)
-  .put(projects.update_a_projects);
-  //.delete(projects.delete_a_projects);
+  .put(projects.update_a_projects)
+  .delete(projects.delete_a_projects);
 
   
   

@@ -134,6 +134,23 @@
                 }
                 
             });
+            //GET Projects
+            $.ajax({
+                url:'http://localhost:3000/projects',
+				type:'GET',
+				async:false,
+				contentType:'application/json',
+                success:function(data){
+                    
+                    $.each(data,function(key,val){
+                        if(data[key]._id == projectsId){return true;}
+                        $('select').material_select();
+                        $('#ProjectDropdown').append("<option value='"+ data[key]._id+"'>"+data[key].Project_Name +"</option>");
+                        $('select').material_select();
+                        key++;
+                    });
+                } 
+            });
             $('#NoteBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $('#NoteEdit').attr('href','NotesEdit.html?projectsId='+projectsId+'&notesId='+notesId);
             //Move note to trash
@@ -175,7 +192,108 @@
                     $('#Message').val(''); 
                     Materialize.toast('Your Comment Has Been Successfully Added', 4000); 
 				});
-            }); 
+            });
+            var length = $('.person').length;
+            var person2 = $('.person');
+            var message2 = $('.message');
+            person2.reverse();
+            message2.reverse();
+            //Move / Copy Note 
+            $(function () {
+				$('#MoveCopyNote').on('click', function () {
+                    var ProjectsDropdown = $('#ProjectDropdown').val();
+                    
+                    if(ProjectsDropdown != null){
+                        if($('#LeaveCopy').is(':checked')){
+                            
+                            //COPY Note
+                            //Make New Note
+                            $.ajax({
+                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes',
+                                type:'POST',
+                                async:false,
+                                data: {
+                                    "Note_Title":$('#Note_Title').val(),
+                                    "Content": $('#Content').val(),
+                                },
+                                dataType : 'json',
+                                success:function(data){
+                                    var id = data._id;
+                                    for(i=0;i<length;i++)
+                                    { 
+                                        $.ajax({
+                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes/'+id+'/comment',
+                                            type:'POST',
+                                            async:true,
+                                            data:{
+                                                "person":person2.eq(i).text(),
+                                                "message":message2.eq(i).text()
+                                            },
+                                            dataType : 'json',   
+                                        });  
+                                    }                                     
+                                }
+                            });
+                            //Closing Modals and making toast
+                            $('#Move').modal('close');
+                            Materialize.toast('Note Copied Successfully', 4000);
+                        }
+                        else{
+                            
+                            //Move Note
+                            //Make New Note
+                            $.ajax({
+                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes',
+                                type:'POST',
+                                async:false,
+                                data: {
+                                    "Note_Title":$('#Note_Title').val(),
+                                    "Content": $('#Content').val(),
+                                },
+                                dataType : 'json',
+                                success:function(data){
+                                    var id = data._id;
+                                    for(i=0;i<length;i++)
+                                    { 
+                                        $.ajax({
+                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes/'+id+'/comment',
+                                            type:'POST',
+                                            async:true,
+                                            data:{
+                                                "person":person2.eq(i).text(),
+                                                "message":message2.eq(i).text()
+                                            },
+                                            dataType : 'json',   
+                                        });  
+                                    }                                     
+                                }
+                            });
+                            //Delete this Note
+                            
+                                document.location = "ProjectsDetail.html?projectsId="+projectsId;
+                                
+                                $.ajax({
+                                    url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
+                                    type:'PUT',
+                                    async:true,
+                                    headers:{
+                                        "movetotrash":"Trash"
+                                    },
+                                    dataType : 'json',
+                                    
+                                });
+                                
+                           
+                            //Closing Modals and making toast
+                            $('#Move').modal('close');
+                            Materialize.toast('Note Moved!', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});   
+                        } 
+                    } 
+                    else{
+                        $('#Move').modal('close');  
+                    }
+				});
+			});
         });
     </script>
     
@@ -290,15 +408,14 @@
                             <div class="modal-content">
                                 <div class="container">
                                     <h5>Move note "<span id="NoteName"></span>" to Project?</h5>
-                                    <select name="" id="" class="material-select">
+                                    <select id="ProjectDropdown" class="material-select">
                                         <option value="" selected disabled>Choose</option>
                                     </select>
                                     <input type="checkbox" class="filled-in" id="LeaveCopy"/>
                                     <label for="LeaveCopy">Leave a copy of this note in this project</label>
                                     <div class="row">
                                         
-                                        <a href="#!" class="btn blue">Ok</a>
-                                        <a href="#!" class="btn grey lighten-1 modal-close">Cancel</a>
+                                        <a id="MoveCopyNote" href="javascript:;" class="btn blue">Ok</a>
                                         
                                     </div>
                                 </div>

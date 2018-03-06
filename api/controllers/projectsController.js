@@ -193,8 +193,8 @@ exports.create_notes_in_projects = function(req,res){
         });
         if(err) 
         res.send(err);
-        //res.json(notes);
-        res.redirect("../../Projects/ProjectsDetail.html?projectsId="+req.params.projectsId);
+        res.json(notes);
+        
     });
 };
 exports.read_notes_by_projectsId_notesId = function(req, res){
@@ -208,11 +208,18 @@ exports.read_notes_by_projectsId_notesId = function(req, res){
 exports.update_a_notes = function(req,res) {
     var header = req.headers['movetotrash'];
     if(header != null){
+        Notes.findByIdAndRemove(req.params.notesId,function(err,discussions){
+            if (err)
+            res.send(err);
+            
+        });
+        /*
         Notes.findByIdAndUpdate(req.params.notesId, { $set: { Status: header }}, {new: true}, function(err, notes) {
             if (err)
             res.send(err);
             res.json(notes);
         });  
+        */
     }
     else{    
         Notes.findOneAndUpdate({_id: req.params.notesId}, req.body, {new: true}, function(err, notes) {

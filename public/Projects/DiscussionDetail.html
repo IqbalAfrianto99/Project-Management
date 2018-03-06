@@ -170,6 +170,7 @@
                 success:function(data){
                     
                     $.each(data,function(key,val){
+                    if(data[key]._id == projectsId){return true;}
                         $('select').material_select();
                         $('#ProjectDropdown').append("<option value='"+ data[key]._id+"'>"+data[key].Project_Name +"</option>");
                         $('select').material_select();
@@ -189,8 +190,6 @@
                     var ProjectsDropdown = $('#ProjectDropdown').val();
                     if(ProjectsDropdown != null){
                         if($('#LeaveCopy').is(':checked')){
-                            
-                            
                             //COPY DISCUSSION
                             //Make New Discussion
                             $.ajax({
@@ -222,8 +221,7 @@
                             
                             //Closing Modals and making toast
                             $('#Move').modal('close');
-                            Materialize.toast('Discussion Copied Successfully', 4000);
-                            
+                            Materialize.toast('Discussion Copied Successfully', 4000);   
                         }
                         else{
                             
@@ -269,12 +267,8 @@
                             
                             //Closing Modals and making toast
                             $('#Move').modal('close');
-                            Materialize.toast('Moving Discussion', 4000);
-                            Materialize.toast('Discussion Moved!', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});
-                            
-                        }
-                        
-                        
+                            Materialize.toast('Discussion Moved!', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});   
+                        } 
                     } 
                     else{
                         $('#Move').modal('close');  
@@ -445,9 +439,8 @@
                                         <label for="Teams3">iqbalafrianto99@gmail.com</label>
                                     </li>
                                 </ul>   
-                                
                             </fieldset>
-                            
+                     
                         </div>
                         <div class="section">
                             <input type="checkbox" class="filled-in" id="HiddenFromClients"/>
