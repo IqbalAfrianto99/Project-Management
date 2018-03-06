@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+			$.ajax({
+                url:'http://localhost:3000/projects',
+                type:'GET',
+                async:false,
+                data:{
+                    projectsId:'5a8a4dbcd2bd2717b85f103d'
+                },
+                contentType:'application/json',
+                success:function(data){
+                    var i = 0;
+                    $('#ul').append('<li>'+JSON.stringify(data.Project_Name)+'</li>'+'<li>'+data[i].Description+'</li>'+'<li>'+data[i].Label+'</li>'+'<li>'+data[7]._id+'</li>');
+                       /*
+                    $.each(data,function(key,val){
+                        $('#ul').append('<li>'+data[i].Project_Name+'</li>'+'<li>'+data[i].Description+'</li>'+'<li>'+data[i].Label+'</li>');
+                        i++;
+                    });
+                    */
+                }
+            });
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+            var param = getUrlVars()['projectsId'];
+            console.log(param);
+		});
+	</script>
+    <div id="div">
+        <ul id="ul"></ul>
+    </div>
+</body>
+</html>

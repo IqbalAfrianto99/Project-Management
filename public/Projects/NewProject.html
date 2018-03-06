@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>New Project</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"/>
+	
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+		header, main, footer {
+			padding-left: 250px;
+		}
+		
+		@media only screen and (max-width : 992px) {
+			header, main, footer {
+				padding-left: 0;
+			}
+			@font-face{
+				font-family: "Roboto";
+				src: url("Roboto-Regular.woff") format('woff');
+			}
+			body{
+				font-family:"Roboto",Verdana;
+			}
+		}
+		.bluee{
+			background-color: #ebf5ff;
+			color: black;
+		}
+		.kanan{
+			text-align: right;  
+		}
+		
+		hr{
+			color: black;
+		}
+		.hvr{
+			color: white;
+		}
+		.hvr:hover{
+			color: rgb(65, 64, 64);
+		}
+		input[type=number]::-webkit-inner-spin-button, 
+		input[type=number]::-webkit-outer-spin-button { 
+			-webkit-appearance: none; 
+			margin: 0; 
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".button-collapse").sideNav({menuWidth: 220});
+			$('select').material_select();
+			$("#tidak").hide();
+			$("#ada").click(function(){
+				$("#tidak").slideToggle(1000);
+				$(".modal").modal();
+			});
+		});
+	</script>
+	
+	<ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+		<li>
+			<h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+		</li>
+		<li>
+			<div class="divider red accent-1"></div>
+		</li>
+		<li>
+			<a href="#!">Projects<i class="material-icons left small">business_center</i></a>
+		</li>
+		<li>
+			<a href="#!">My Work<i class="material-icons left small">computer</i></a>
+		</li>
+		<li>
+			<a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+		</li>
+		<li>
+			<a href="#!">Calendar<i class="material-icons left small">today</i></a>
+		</li>
+		<li>
+			<a href="#!">People<i class="material-icons left small">group</i></a>
+		</li>
+		<li>
+			<a href="#!">Invoices<i class="material-icons left small">local_atm</i></a>
+		</li>
+		<li>
+			<a href="Estimates.html">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		<li>
+			<a href="#!">Reports<i class="material-icons left small">report</i></a>
+		</li>
+		<li>
+			<a href="#!">Trash<i class="material-icons left small">delete</i></a>
+		</li>
+		<li>
+			<a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+		</li>
+		<li>
+			<a href="#!">Settings<i class="material-icons left small">settings</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		
+		<li>
+			<img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+		</li>
+	</ul>
+	<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+	
+	<header>
+		<!--Header Nya Disini Tong!-->		
+	</header>
+	<main>
+		<!--Isi Nya Disini!-->
+		<div class="container">
+			<a href="Projects.html" class="btn waves-effect waves-light red lighten-1"><i class="material-icons left">subdirectory_arrow_left</i>Projects</a>
+			<fieldset disabled="disabled" style="margin-top:15px;"class="bluee">
+				<div style="margin-left:10px;">
+					<h4 style="font-size:27px;"><b>New Project</b></h4>
+					<p>After creating a new project, you’ll be able to invite your team and clients to work together.</p>
+				</div>
+			</fieldset>
+			<form action="http://localhost:3000/projects" method="post">
+				<fieldset style="margin-bottom:40px;">
+					<div class="row" style="margin-top:10px;">
+						<div class="col s5 kanan" ><label for="nm"><b>Project Name*</b></label></div>
+						<div class="col s7"><input id="nm" name="Project_Name" class="browser-default col s12" type="text" placeholder="Enter the name of project"></div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for="dsc"><b>Description</b></label></div>
+						<div class="col s7"><textarea name="Description" class="col s12" id="dsc" style="height:100px;" placeholder="Describe the project"></textarea></div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for="tmp"><b>Template</b></label></div>
+						<div class="col s7">
+							<select name="Template" class="browser-default col s12" id="tmp">
+								<option value="">Choose template...</option>
+								<option value="Satu">Template 1</option>
+								<option value="Dua">Template 2</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for="lbl"><b>Label</b></label></div>
+						<div class="col s7"><input name="Label" class="browser-default col s12" type="text" id="lbl" placeholder="Label name"><br> <label for="lbl" >The label shows what stage the project is in.</label> </div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for="ctg"><b>Category</b></label></div>
+						<div class="col s7"><input name="Category" class="browser-default col s12" type="text" id="ctg" placeholder="Category name"><br> <label for="ctg">Choose a category to stay organized.</label> </div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for="cmp"><b>Client Company</b></label></div>
+						<div class="col s7"><input type="text" name="Client_Company" id="cmp" class="browser-default col s12" placeholder="Company name"> <br> <label for="cmp">Leave blank if this is an in-house project.</label></div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s5 kanan"><label for=""><b>Time and Expenses</b></label></div>
+						<div class="col s7"><input type="checkbox" class="filled-in" name="" id="ada">
+							<label for="ada">Enable time and expense tracking</label>
+						</div>
+					</div>
+					<div class="row" id="tidak">
+						<div class="col s5"></div>
+						<div class="col s7">
+							<input type="checkbox" class="filled-in" id="tdk"><label for="tdk">Allow clients to see time and expenses</label>
+							<br>
+							<fieldset>
+								<Span class=""><h6><b>Currency</b></h6></Span>
+								<div class="col s12"><select name="" id="">
+									<option value="">Indonesia Rupiah</option>
+									<option value="">Australian Dollar</option>
+								</select></div>
+								<div class="col s6"><h6><b>Available Job Type</b></h6></div>
+								<div class="col s6"><b>Rate on this project (IDR/Hour)</b></div>
+								<div class="col s12"><hr></div>
+								<div class="col s6">General <a href="#modal1" class="btn-flat modal-trigger"><i id="editt" class="material-icons hvr">edit</i></a></div>
+								<div class="col s6" style="margin-top:7px;"><input value="100.00" type="number" class="browser-default col s12"></div>
+								<div class="col s12"><hr></div>
+								<div class="col s12"><label>Set what kind of work will be done on the project, and the hourly rate.</label></div>
+								<div class="col s12" style="margin-top:15px;margin-bottom:15px;"><a href="#modal2" class="modal-trigger" style="text-decoration:underline;">+ New Job Type</a></div>
+								<div class="col s12"><h6><b>Budget in USD (optional)</b></h6></div>
+								<div class="col s12"><input type="number" name="" id="" class="browser-default col s12" placeholder="e.g. 5000"></div>
+							</fieldset>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12"><hr></div>
+					</div>
+					<div class="row">
+						<div class="col s6 kanan"><button type="submit" href="" class="btn btn-small">Create Project</button></div>
+						<div class="col s6"><a href="" class="btn btn-small white grey-text">Cancel</a></div>
+					</div>
+				</fieldset>
+				<div class="modal" id="modal1">
+					<div class="modal-content">
+						<div class="row">
+							<div class="col s12">
+								<h6><b>Rename Job Type</b></h6>
+							</div>
+							<div class="col s12">
+								<h6 style="color:grey;">You will rename for this and all your other projects.</h6>
+							</div>
+							<div class="col s12">
+								<hr>
+							</div>
+							<div class="col s12" style="margin-top:30px;">
+								<h6><b>Job type</b></h6>
+							</div>
+							<div class="col s12" style="margin-bottom:30px;">
+								<input type="text" value="General" class="browser-default col s12" style="height:40px;">
+							</div>
+							<div class="col s12">
+								<hr>
+							</div>
+							<div class="col s12">
+								<a href="#!" class="btn blue white-text">Rename Job Type</a>
+								<a href="#!" class="modal-action modal-close btn white black-text">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal" id="modal2">
+					<div class="modal-content">
+						<div class="row">
+							<div class="col s6"><h6><b>New Job Type</b></h6></div>
+							<div class="col s6"></div>
+							<div class="col s12"><h6 style="color:grey;">Set a job type and hourly rate for this and all your other projects.</h6></div>
+							<div class="col s12"><hr></div>
+							<div class="col s12" style="margin-top:30px;"><h6><b>Job type</b></h6></div>
+							<div class="col s12"><input class="col s12 browser-default" type="text" style="height:40px;"></div>
+							<div class="col s12"><h6><b>Default Rate (USD/Hour)</b></h6></div>
+							<div class="col s12"><input class="col s12 browser-default" type="number" name="" style="height:40px;" placeholder="Rate"></div>
+							<div class="col s12" style="margin-top:30px;"><hr></div>
+							<div class="col s12">
+								<a href="#!" class="btn blue white-text">Add Job Type</a>
+								<a href="#!" class="modal-action modal-close white black-text btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</main>
+		<footer>
+			<!--Puter Kalo Emg Make Puter!-->
+		</footer>
+	</body>
+	</html>

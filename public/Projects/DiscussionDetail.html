@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Discussion</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+	
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+		header, main, footer {
+			padding-left: 250px;
+		}
+		
+		@media only screen and (max-width : 992px) {
+			header, main, footer {
+				padding-left: 0;
+			}
+			@font-face{
+				font-family: "Roboto";
+				src: url("Roboto-Regular.woff") format('woff');
+			}
+			body{
+				font-family:"Roboto",Verdana;
+			}
+		}
+		.bluee{
+			background-color: #ebf5ff;
+			color: black;
+		}
+		.kanan{
+			text-align: right;  
+		}
+		
+		hr{
+			color: black;
+		}
+		.hvr{
+			color: white;
+		}
+		.hvr:hover{
+			color: rgb(65, 64, 64);
+		}
+		input[type=number]::-webkit-inner-spin-button, 
+		input[type=number]::-webkit-outer-spin-button { 
+			-webkit-appearance: none; 
+			margin: 0; 
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+            var socket = io.connect('http://localhost:3000');
+			$(".button-collapse").sideNav({menuWidth: 220});
+			$('select').material_select();
+			$("#tidak").hide();
+			$("#ada").click(function(){
+				$("#tidak").slideToggle(1000);
+				$(".modal").modal();
+            });
+            $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, 
+                hover: false, 
+                gutter: 3, 
+                belowOrigin: true, 
+                alignment: 'left', 
+                stopPropagation: false 
+            });
+            $('.modal').modal();
+            $("#Subscribers").hide();
+            $('#Choose').on("click",function(){
+                $("#Subscribers").toggle();
+            });
+            $('#select-all').click(function(event) {   
+                if(this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = true;                       
+                    });   
+                }
+                if(!this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = false;                       
+                    });   
+                }
+            });
+            $('#select-none').click(function(event) {   
+                
+                $('#Subscribers :checkbox').each(function(){
+                    this.checked = false;
+                });                    
+                
+                
+            });
+            $('#upload_linkFiles').on("click",function(){
+                $('#upload_inputFiles').trigger('click');
+            });
+            $('#upload_linkDissDetail').on("click",function(){
+                $('#upload_inputDissDetail').trigger('click');
+            });
+			function getUrlVars() {
+				var vars = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+				function(m,key,value) {
+					vars[key] = value;
+				});
+				return vars;
+			}
+            var projectsId = getUrlVars()['projectsId'];
+            var discId = getUrlVars()['discId'];
+            $('#DiscBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            $('#Project_Name').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            $('#EditDisc').attr('href','EditDiscussion.html?projectsId='+projectsId+'&discId='+discId);
+            //GET DISCUSSION DATA
+            $.ajax({
+                url:'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
+                type:'GET',
+                async:false,
+                contentType:'application/json',
+                success:function(data){
+                    $('#Discussion_Name').text(data[0].Discussion_Name);
+                    $('#Discussion_About').text(data[0].Discussion_About);
+                    $('#Project_Name').text(data[0].Projects[0].Project_Name);
+                    $("[id=DiscNameInModal]").text(data[0].Discussion_Name);
+                    var i;
+                    var Comments=data[0].Comments.length;
+                    for(i=0;i <= Comments;i++){
+                        var message = data[0].Comments[i].message;
+                        var person = data[0].Comments[i].person;
+                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
+                    }
+                    
+                }
+                
+            });
+            //Move Discussion To Trash
+            $(function () {
+				$('#MoveDiscToTrash').on('click', function () {
+                    document.location = "ProjectsDetail.html?projectsId="+projectsId;
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
+						type:'PUT',
+						async:true,
+                        headers:{
+                            "movetotrash":"Trash"
+                        },
+						dataType : 'json',
+						
+                    });
+                    
+				});
+			});
+            //GET All Projects
+            $.ajax({
+                url:'http://localhost:3000/projects',
+				type:'GET',
+				async:false,
+				contentType:'application/json',
+                success:function(data){
+                    
+                    $.each(data,function(key,val){
+                        $('select').material_select();
+                        $('#ProjectDropdown').append("<option value='"+ data[key]._id+"'>"+data[key].Project_Name +"</option>");
+                        $('select').material_select();
+                        key++;
+                    });
+                } 
+            });
+            var length = $('.person').length;
+            var person2 = $('.person');
+            var message2 = $('.message');
+            person2.reverse();
+            message2.reverse();
+            
+            //Move / Copy disc to project
+            $(function () {
+				$('#MoveCopyDisc').on('click', function () {
+                    var ProjectsDropdown = $('#ProjectDropdown').val();
+                    if(ProjectsDropdown != null){
+                        if($('#LeaveCopy').is(':checked')){
+                            
+                            
+                            //COPY DISCUSSION
+                            //Make New Discussion
+                            $.ajax({
+                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions',
+                                type:'POST',
+                                async:true,
+                                data:{
+                                    "Discussion_Name":$('#Discussion_Name').text(),
+                                    "Discussion_About":$('#Discussion_About').text()
+                                },
+                                dataType : 'json',
+                                success:function(data){
+                                    var id = data;
+                                    for(i=0;i<length;i++)
+                                    { 
+                                        $.ajax({
+                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions/'+id+'/comment',
+                                            type:'POST',
+                                            async:true,
+                                            data:{
+                                                "person":person2.eq(i).text(),
+                                                "message":message2.eq(i).text()
+                                            },
+                                            dataType : 'json',   
+                                        });  
+                                    }  
+                                }     
+                            });
+                            
+                            //Closing Modals and making toast
+                            $('#Move').modal('close');
+                            Materialize.toast('Discussion Copied Successfully', 4000);
+                            
+                        }
+                        else{
+                            
+                            //Make New Discussion
+                            $.ajax({
+                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions',
+                                type:'POST',
+                                async:true,
+                                data:{
+                                    "Discussion_Name":$('#Discussion_Name').text(),
+                                    "Discussion_About":$('#Discussion_About').text()
+                                },
+                                dataType : 'json',
+                                success:function(data){
+                                    var id = data;
+                                    for(i=0;i<length;i++)
+                                    { 
+                                        $.ajax({
+                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions/'+id+'/comment',
+                                            type:'POST',
+                                            async:true,
+                                            data:{
+                                                "person":person2.eq(i).text(),
+                                                "message":message2.eq(i).text()
+                                            },
+                                            dataType : 'json',   
+                                        });  
+                                    }  
+                                }
+                                
+                            }); 
+                            
+                            //Delete this Discussions
+                            $.ajax({
+                                url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
+                                type:'PUT',
+                                async:true,
+                                headers:{
+                                    "movetotrash":"Trash"
+                                },
+                                dataType : 'json',
+                            });
+                            
+                            //Closing Modals and making toast
+                            $('#Move').modal('close');
+                            Materialize.toast('Moving Discussion', 4000);
+                            Materialize.toast('Discussion Moved!', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});
+                            
+                        }
+                        
+                        
+                    } 
+                    else{
+                        $('#Move').modal('close');  
+                    }
+				});
+			});  
+            $('#AddComment').hide();
+            
+            $('#Message').on('focus',function(){
+                $('#AddComment').show();
+            });
+            $('#Message').on('blur',function(){
+                
+                if(!$.trim($("#Message").val())){
+                    $('#AddComment').hide()
+                }
+                else{
+                    $('#AddComment').show()
+                }
+                
+            });
+            
+            $(function () {
+				$('#AddComment').on('click', function () {
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId+'/comment',
+						type:'POST',
+						async:true,
+                        data:{
+                            "person":'Iqbalafrianto99',
+                            "message":$('#Message').val()
+                        },
+						dataType : 'json',
+						success:function(data){
+                            var comments = data.Comments.length;
+                            var lascomments = data.Comments[comments - 1];
+                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");
+                            
+                        }
+                    });  
+                    $('#Message').val(''); 
+                    Materialize.toast('Your Comment Added', 4000); 
+				});
+            });
+            
+            
+		});
+	</script>
+	
+	<ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+		<li>
+			<h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+		</li>
+		<li>
+			<div class="divider red accent-1"></div>
+		</li>
+		<li>
+			<a href="Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+		</li>
+		<li>
+			<a href="#!">My Work<i class="material-icons left small">computer</i></a>
+		</li>
+		<li>
+			<a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+		</li>
+		<li>
+			<a href="#!">Calendar<i class="material-icons left small">today</i></a>
+		</li>
+		<li>
+			<a href="#!">People<i class="material-icons left small">group</i></a>
+		</li>
+		<li>
+			<a href="#!">Invoices<i class="material-icons left small">local_atm</i></a>
+		</li>
+		<li>
+			<a href="Estimates.html">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		<li>
+			<a href="#!">Reports<i class="material-icons left small">report</i></a>
+		</li>
+		<li>
+			<a href="#!">Trash<i class="material-icons left small">delete</i></a>
+		</li>
+		<li>
+			<a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+		</li>
+		<li>
+			<a href="#!">Settings<i class="material-icons left small">settings</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		
+		<li>
+			<img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+		</li>
+	</ul>
+	<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+	
+	<header>
+		<!--Header Nya Disini Tong!-->		
+	</header>
+	<main>
+		<!--Isi Nya Disini!-->
+		<div class="container">
+            <div class="row">
+                <div class="col s12 m9 l9">
+                    <a id="Project_Name"></a>&nbsp;<span class="grey-text">started by iqbalafrianto99 on jan 19,2018</span><br>
+                    <span><a id="EditDisc" class="btn grey lighten-1" style="text-transform: unset">Edit Discussion</a></span>
+                    <span><a href="#MoveToTrashDiss" class="btn grey lighten-1 modal-trigger" style="text-transform: unset"><i class="material-icons">delete</i></a></span>
+                    <span><a href="" class="dropdown-button btn grey lighten-1" data-activates="dropdown4" style="text-transform: unset"><i class="material-icons" style="margin-left: 0;">more_horiz</i></a></span>
+                    <span><a id="DiscBack" class="btn grey lighten-1 modal-trigger" style="text-transform: unset">Back</a></span>
+                    <ul id="dropdown4" class="dropdown-content">
+                        <li><a href="#ConvertToTask" class="modal-trigger">Convert to Task</a></li>
+                        <li><a href="#Move" class="modal-trigger">Move / Copy to Project</a></li>
+                    </ul>
+                    
+                    <h5 id="Discussion_Name"></h5>
+                    <h6 id="Discussion_About"></h6>
+                    <div class="divider"></div>
+                    <div class="section">
+                        <h5>Discussion</h5>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea id="Message" class="materialize-textarea"></textarea>
+                            <label for="Message">Write a comment</label>
+                        </div>        
+                        <div id="AddComment">
+                            <div class="col s12">
+                                <p>
+                                    <b>Attachments</b>
+                                    <span style="float: right">
+                                        <a href="#" id="upload_linkDissDetail">Attach File</a>
+                                        <input type="file" id="upload_inputDissDetail" style="display:none">
+                                        or
+                                        <a href="#" class="dropdown-button btn-flat" data-activates="dropdown5" style="text-transform: unset">Attach From</a>
+                                        <ul id="dropdown5" class="dropdown-content">
+                                            <li><a href="#!">Google Drive</a></li>
+                                            <li><a href="#!">Dropbox Chooser</a></li>
+                                        </ul>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col s12" style="margin-bottom:10px">
+                                <a id="AddComment" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
+                                <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
+                            </div>
+                        </div>
+                        
+                        <div id="comment">
+                            
+                            <div class="col s12 section">
+                                <h6><b class="person">hendysantoso911</b><span>8 days ago</span></h6>
+                                <p class="message">Hello World</p>
+                            </div>
+                            
+                            
+                            <div class="col s12 section">
+                                <h6><b class="person">iqbalafrianto99</b><span>8 days ago</span></h6>
+                                <p class="message">Hello World</p>
+                            </div>
+                        </div>
+                        
+                        <a href="#!" style="text-decoration:underline">Show history of changes</a>
+                    </div>
+                </div>
+                <div class="col s12 m3 l3">
+                    <p>
+                        <b>Subscribers</b>
+                        <span style="float:right" id="Choose">
+                            <a href="#!">Choose</a>
+                        </span>
+                        <div id="Subscribers">
+                            
+                            <fieldset>
+                                <input type="checkbox" class="filled-in" id="select-all"/>
+                                <label for="select-all">Select All .</label>
+                                <a href="#!" id="select-none" class="grey-text">Select None</a>
+                                <br>
+                                
+                                <ul id="checkboxul">
+                                    <li>
+                                        
+                                        <input type="checkbox" class="filled-in" id="Clients"/>
+                                        <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                        
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" class="filled-in" id="Teams1"/>
+                                        <label for="Teams1">hendysantoso911</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" class="filled-in" id="Teams2"/>
+                                        <label for="Teams2">nur.rizki21</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" class="filled-in" id="Teams3"/>
+                                        <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                    </li>
+                                </ul>   
+                                
+                            </fieldset>
+                            
+                        </div>
+                        <div class="section">
+                            <input type="checkbox" class="filled-in" id="HiddenFromClients"/>
+                            <label for="HiddenFromClients">Hidden From Clients</label>
+                        </div>
+                    </p>
+                </div>
+            </div>
+            <!-- Convert to task Modal -->
+            <div class="modal" id="ConvertToTask">
+                <div class="modal-content">
+                    <div class="container">
+                        <h5>Convert "<span id="DiscNameInModal"></span>" to a task?</h5>
+                        <h6>Converting a discussion to a task will transfer all the comments, files, and subscriptions the new task.</h6>
+                        <div class="row">
+                            
+                            <a href="#!" class="btn blue">Convert to task</a>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Convert to task Modal --> 
+            <!-- Move Modal -->
+            <div class="modal" id="Move">
+                <div class="modal-content">
+                    <div class="container">
+                        <h5>Move discussion "<span id="DiscNameInModal"></span>" to Project?</h5>
+                        <select name="" id="ProjectDropdown" class="material-select">
+                            <option value="" selected disabled>Choose</option>  
+                        </select>
+                        <input type="checkbox" class="filled-in" id="LeaveCopy"/>
+                        <label for="LeaveCopy">Leave a copy of this discussion in this project</label>
+                        <div class="row">
+                            
+                            <a id="MoveCopyDisc" href="javascript:;" class="btn blue">Ok</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Move Modal --> 
+            <!-- Move To Trash Diss Modal -->
+            <div class="modal" id="MoveToTrashDiss">
+                <div class="modal-content">
+                    <div class="container">
+                        <h5>Move discussion "<span id="DiscNameInModal"></span>" to Trash?</h5>
+                        <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                        <div class="row">
+                            
+                            <a id="MoveDiscToTrash" class="btn blue">Move To Trash</a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Move To Trash Diss Modal -->
+		</div>
+    </main>
+    <footer>
+        <!--Puter Kalo Emg Make Puter!-->
+    </footer>
+</body>
+</html>

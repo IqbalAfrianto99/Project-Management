@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Note</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+    
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+        header, main, footer {
+            padding-left: 250px;
+        }
+        
+        @media only screen and (max-width : 992px) {
+            header, main, footer {
+                padding-left: 0;
+            }
+            
+        }
+        @font-face{
+            font-family: "Roboto";
+            src: url(Roboto-Regular.woff) format('woff');
+        }
+        body{
+            font-family:"Roboto",Verdana;
+        }
+        .notelook {
+            background: url(http://i.stack.imgur.com/ynxjD.png) repeat-y;
+            width: 600px;
+            height: 300px;
+            font: normal 14px verdana;
+            line-height: 25px;
+            padding: 2px 10px;
+            border: 1px lightgray;
+        }
+        
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".button-collapse").sideNav({menuWidth: 220});
+            $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, 
+                hover: false, 
+                gutter: 3, 
+                belowOrigin: true, 
+                alignment: 'left', 
+                stopPropagation: false 
+            }
+            );
+            $('.modal').modal();
+            $("#Subscribers").hide();
+            $('#Choose').on("click",function(){
+                $("#Subscribers").toggle();
+            });
+            $('#select-all').click(function(event) {   
+                if(this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = true;                       
+                    });   
+                }
+                if(!this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = false;                       
+                    });   
+                }
+            });
+            $('#select-none').click(function(event) {   
+                
+                $('#Subscribers :checkbox').each(function(){
+                    this.checked = false;
+                });                    
+                
+                
+            });
+            $('select').material_select();
+            $('#upload_linkNotes').on("click",function(){
+                $('#upload_inputNotes').trigger('click');
+            });
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+            var projectsId = getUrlVars()['projectsId'];
+            var notesId = getUrlVars()['notesId'];
+            $.ajax({
+                url:'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
+                type:'GET',
+                async:false,
+                contentType:'application/json',
+                success:function(data){
+                    
+                    $('#Note_Title').val(data[0].Note_Title);
+                    $('#Content').val(data[0].Content);
+                }
+                
+            });
+            $('#NoteBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            $('#NoteEdit').attr('href','NotesEdit.html?projectsId='+projectsId+'&notesId='+notesId);
+            //Move note to trash
+            $(function () {
+				$('#TrashNote').on('click', function () {
+                    document.location = "ProjectsDetail.html?projectsId="+projectsId;
+                    
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
+						type:'PUT',
+						async:true,
+                        headers:{
+                            "movetotrash":"Trash"
+                        },
+						dataType : 'json',
+						
+                    });
+                    
+				});
+			});
+        });
+    </script>
+    
+    <ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+        <li>
+            <h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+        </li>
+        <li>
+            <div class="divider red accent-1"></div>
+        </li>
+        <li class="active">
+            <a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+        </li>
+        <li>
+            <a href="#!">My Work<i class="material-icons left small">computer</i></a>
+        </li>
+        <li>
+            <a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+        </li>
+        <li>
+            <a href="#!">Calendar<i class="material-icons left small">today</i></a>
+        </li>
+        <li>
+            <a href="#!">People<i class="material-icons left small">group</i></a>
+        </li>
+        <li>
+            <a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+        </li>
+        <li>
+            <a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        <li>
+            <a href="#!">Reports<i class="material-icons left small">report</i></a>
+        </li>
+        <li>
+            <a href="#!">Trash<i class="material-icons left small">delete</i></a>
+        </li>
+        <li>
+            <a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+        </li>
+        <li>
+            <a href="#!">Settings<i class="material-icons left small">settings</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        
+        <li>
+            <img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+        </li>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    <header>
+        
+    </header>
+    <main>
+        
+        <!--Isi Nya Disini!-->
+        <div class="container">
+            
+            <a id="NoteBack" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Note</a>                 
+            <div class="row">
+                <div class="row">
+                    <div class="col s12 m12 l9">
+                        <p><b>Note Title:</b></p>
+                        <textarea name="" id="Note_Title" rows="1" class="notelook" style="padding-bottom:0;height:50px;resize:none;overflow:hidden" maxlength="255" disabled>
+                            Lipsum
+                        </textarea>
+                        <p><b>Content:</b></p>
+                        <textarea name="" id="Content" cols="30" rows="10" class="notelook" style="padding-top:0;resize:none" disabled>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia quo reiciendis commodi blanditiis dolor minima beatae alias libero, nobis, nemo est architecto aperiam! Commodi, vitae veritatis obcaecati totam reprehenderit optio.  
+                        </textarea>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="comment" class="materialize-textarea"></textarea>
+                                <label for="comment">Write a comment</label>
+                            </div>
+                            <div class="col s12">
+                                <p>
+                                    <b>Attachments</b>
+                                    <span style="float: right">
+                                        <a href="#!" id="upload_linkNotes">Attach File</a>
+                                        <input type="file" style="display:none" id="upload_inputNotes">
+                                        or
+                                        <a href="#" class="dropdown-button btn-flat" data-activates="dropdown5" style="text-transform: unset">Attach From</a>
+                                        <ul id="dropdown5" class="dropdown-content">
+                                            <li><a href="#!">Google Drive</a></li>
+                                            <li><a href="#!">Dropbox Chooser</a></li>
+                                        </ul>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m12 l3">
+                        <center>
+                            <a id="NoteEdit" class="btn blue waves-effect waves-light" style="margin:9px;text-transform:unset">Edit Note</a>
+                            <a href="#MoveToTrash" class="btn red waves-effect waves-light modal-trigger" style="margin:9px;text-transform:unset"><i class="material-icons">delete</i></a>
+                            <a href="#!" class="btn-flat white waves-effect waves-light black-text dropdown-button" style="margin:9px;text-transform:unset" data-activates="NotesMore"><i class="material-icons">more_horiz</i></a>
+                            <ul id="NotesMore" class="dropdown-content">
+                                <li><a href="#Move" class="modal-trigger">Move / Copy to Project</a></li>
+                            </ul>
+                            
+                        </center>
+                        <!-- Move To Trash Modal -->
+                        <div class="modal" id="MoveToTrash">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move "Project Management"to Trash?</h5>
+                                    <h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
+                                    
+                                    <div class="row">
+                                        
+                                        <a id="TrashNote" class="btn red">Delete</a>
+                                        <a href="#!" class="btn grey lighten-1 modal-close">Cancel</a>
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move To Trash Modal -->
+                        <!-- Move Modal -->
+                        <div class="modal" id="Move">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move discussion "LLLL" to Project?</h5>
+                                    <select name="" id="" class="material-select">
+                                        <option value="" selected disabled>Choose</option>
+                                    </select>
+                                    <input type="checkbox" class="filled-in" id="LeaveCopy"/>
+                                    <label for="LeaveCopy">Leave a copy of this discussion in this project</label>
+                                    <div class="row">
+                                        
+                                        <a href="#!" class="btn blue">Ok</a>
+                                        <a href="#!" class="btn grey lighten-1 modal-close">Cancel</a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move Modal --> 
+                        <div class="row">
+                            <div class="col s12">
+                                <p>
+                                    <b>Subscribers</b>
+                                    <span style="float:right" id="Choose">
+                                        <a href="#!">Choose</a>
+                                    </span>
+                                    <div id="Subscribers" class="section">
+                                        <fieldset>
+                                            <input type="checkbox" class="filled-in" id="select-all"/>
+                                            <label for="select-all">Select All .</label>
+                                            <a href="#!" id="select-none" class="grey-text">Select None</a>
+                                            <br>
+                                            <ul id="checkboxul">
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Clients"/>
+                                                    <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams1"/>
+                                                    <label for="Teams1">hendysantoso911</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams2"/>
+                                                    <label for="Teams2">nur.rizki21</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams3"/>
+                                                    <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                                </li>
+                                            </ul>   
+                                            
+                                        </fieldset>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="col s12">
+                                <input type="checkbox" class="filled-in" id="HiddenClients">
+                                <label for="HiddenClients">Hidden From Clients</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        </main>
+        <footer>
+            <!--Puter Kalo Emg Make Puter!-->
+        </footer>
+    </body>
+    </html>

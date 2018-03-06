@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Invoices</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+	
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+		header, main, footer {
+			padding-left: 250px;
+		}
+		
+		@media only screen and (max-width : 992px) {
+			header, main, footer {
+				padding-left: 0;
+			}
+			header{
+				background-color: #ef5350;
+			}
+		}
+		@font-face{
+			font-family: "Roboto";
+			src: url(Roboto-Regular.woff) format('woff');
+		}
+		body{
+			font-family:"Roboto",Verdana;
+		}
+		.main {
+			margin-left: 160px;
+			padding: 0px 10px;
+		}
+		label {
+			color: black;
+		}
+		.test{
+			border-bottom: none;
+		}
+		
+	</style>
+	
+</head>
+<body>
+	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".button-collapse").sideNav({menuWidth: 220});
+			$('select').material_select();
+			$('.datepicker').pickadate({
+				selectMonths: true, 
+				selectYears: 200, 
+				today: 'Today',
+				clear: 'Clear',
+				close: 'Ok',
+				closeOnSelect: false 
+			});
+			$(".radio").hide();
+			$("input[name=group1]").on( "change", function() {
+				
+				var id = $(this).val();
+				$(".radio").hide();
+				$("#"+id).show();
+			} );
+			
+			$(".InvoicesDiv").hide();
+			$("input[name=group2]").on("change",function(){
+				var id2 = $(this).val();
+				$(".InvoicesDiv").hide();
+				$("#"+id2).show();
+			});
+			$('#Discount').on("click",function(){
+				var Discount = "<p>Add Discount :<input type='number'></p>";
+				$(this).replaceWith(Discount);
+			});
+			var no =1;
+			$('#NewItem').on("click",function(){
+				no++;
+				$('select').material_select();
+				$('#InvoicesTable tr:last').after("<tr><td>"+no+"</td><td><input type='text' name='Description'></td><td><input type='number' name='Quantity'></td><td><input type='number' name='Cost'></td><td><input type='number' name='Amount'></td><td><select><option>No Tax</option><option>VAT (17,5%)</option></select></td></tr>");
+				$('select').material_select();
+			});
+			$('#AddNotesDiv').on("click",function(){
+				var Notes = "<div class='row'><div class='col s12 m6 l4'><h6>Messages*</h6></div><div class='col s12 m6 l4'><textarea style='height: 160px;'></textarea><p>The note will appear at the bottom of the invoice PDF. It can contain additional information, payment details, or a thank you message.</p></div></div>";
+				$('#AddNotes').replaceWith(Notes);
+			});
+			$('#AddPrivateCommentDiv').on("click",function(){
+				var Notes = "<div class='row'><div class='col s12 m6 l4'><h6>Messages*</h6></div><div class='col s12 m6 l4'><textarea style='height: 160px;'></textarea><p>Private comments are invisible to clients and don't appear on the invoice PDF.</p></div></div>";
+				$('#AddPrivateComment').replaceWith(Notes);
+			});
+			$('#tax').hide();
+			$('#taxSelect').on("change",function(){
+				var select = $(this).val();
+
+				if(select == 'tax')
+				{
+					$('#tax').show();
+				}
+				else
+				{
+					$('#tax').hide();
+				}
+			});
+		});
+	</script>
+	<ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+		<li>
+			<h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+		</li>
+		<li>
+			<div class="divider red accent-1"></div>
+		</li>
+		<li>
+			<a href="#!">Projects<i class="material-icons left small">business_center</i></a>
+		</li>
+		<li>
+			<a href="#!">My Work<i class="material-icons left small">computer</i></a>
+		</li>
+		<li>
+			<a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+		</li>
+		<li>
+			<a href="#!">Calendar<i class="material-icons left small">today</i></a>
+		</li>
+		<li>
+			<a href="#!">People<i class="material-icons left small">group</i></a>
+		</li>
+		<li class="active">
+			<a href="Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+		</li>
+		<li>
+			<a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		<li>
+			<a href="#!">Reports<i class="material-icons left small">report</i></a>
+		</li>
+		<li>
+			<a href="#!">Trash<i class="material-icons left small">delete</i></a>
+		</li>
+		<li>
+			<a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+		</li>
+		<li>
+			<a href="#!">Settings<i class="material-icons left small">settings</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		
+		<li>
+			<img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+		</li>
+	</ul>
+	<main>
+		<div class="container">
+			<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons white-text">menu</i></a>
+			<span class="flow-text">Edit Invoices</span>
+			<hr>
+			<a href="Invoices.html" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Invoices</a>
+			
+			
+			<form method="" action="">
+				<fieldset style="background-color: #ebf5ff">
+					<h1 style="font-size: 27px;"><b>Edit Invoices</b></h1>
+				</fieldset>
+				<fieldset>
+					<div class="row">
+						<div class="col s12 left-align">
+							<h6 class="green-text">Who is the Invoice for?</h6>
+						</div>
+						<div class="col s5 right-align">
+							<label for="nm"><b>Client Company Name</b></label>
+						</div>
+						<div class="col s7"><input type="text" class="browser-default col s7" placeholder="Enter New Or Existing Company"></div>
+					</div>
+					<div class="row">
+						<div class="col s5 right-align">
+							<label for="nm"><b>Address*</b></label>
+						</div>
+						<div class="col s7">
+							<textarea class="materialize-textarea" id="Address" placeholder="Address"></textarea>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col s4 right-align">
+							<label for="nm"><b>Currency & Language</b></label>
+						</div>
+						<div class="col s4">
+							<select>
+								<option value="" disabled selected>Choose your currency</option>
+								<option value="1">US Dollar</option>
+								<option value="2">Indonesian Rupiah</option>
+							</select>
+						</div>
+						<div class="col s4">
+							<select>
+								<option value="" disabled selected>Choose your option</option>
+								<option value="1">English</option>
+								<option value="2">Deutsh</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<div class="row">
+						<div class="col s12 left-align">
+							<h6 class="green-text">General info</h6>
+						</div>
+						<div class="col s5 right-align">
+							<label for=""><b>Invoice ID*</b></label>
+						</div>
+						<div class="col s7">
+							<input id="last_name" type="text" class="browser-default col s7" placeholder="Invoices ID"><br>
+							<p>Invoice IDs for subsequent invoices will be generated automatically based on the previous invoice ID (learn more).</p>
+						</div>
+						<div class="col s5 right-align">
+							<label for=""><b>Issued On*</b></label>
+						</div>
+						<div class="col s7"><input type="text" name="Date" class="datepicker col s7" placeholder="Issued On"></div>
+					</div>
+					<div class="row">
+						<div class="col s5 right-align">
+							<label for=""><b>Due On*</b></label>
+						</div>
+						<div class="input-field col s7">
+							<select class="col s7">
+								<option value="" disabled selected>Choose your option</option>
+								<option value="1">Due On Receipt</option>
+								<option value="2">10 Days After Issue</option>
+							</select>
+						</div>
+						<div class="col s5 right-align">
+							<label for=""><b>Due On*</b></label>
+						</div>
+						<div class="col s7">
+							<input type="text" class="browser-default col s7" placeholder="Reference">
+						</div>
+					</div>
+					
+					
+				</fieldset>
+				<fieldset>
+					<p>
+						<input type="radio" name="group1" id="group1" value="r1" checked>
+						<label for="group1">Free-form Invoice</label>
+					</p>
+					<p>
+						<input type="radio" name="group1" id="group2" value="r2">
+						<label for="group2">Invoice based on tracked Time and Expenses in projects</label>
+					</p>
+					<div class="radio" id="r2">
+						<div class="row">
+							<div class="col s12 m8 l6">
+								<h6>Select Projects:</h6>
+							</div>
+							<div class="col s12 m8 l6">
+								<p>
+									<input type="checkbox" name="projects" id="projects1">
+									<label for="projects1">Projects</label>
+									<input type="checkbox" name="projects" id="projects2">
+									<label for="projects2">Projects</label>
+								</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col s12 m8 l6">
+								<h6>What To Bill:</h6>
+							</div>
+							<div class="col s12 m8 l6">
+								<p>
+									<input type="checkbox" name="projects" id="Time" checked>
+									<label for="Time">Time Records</label>
+									<input type="checkbox" name="projects" id="expense" checked>
+									<label for="expense">Expenses</label>
+								</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col s12 m8 l6">
+								<h6>Time Period:</h6>
+							</div>
+							<div class="col s12 m8 l6">
+								<p>
+									<input type="radio" name="group2" id="AllInvoices" checked value="1">
+									<label for="AllInvoices">All uninvoiced entries</label>
+								</p>
+								<p>
+									<input type="radio" name="group2" id="InvoicesFrom" value="2">
+									<label for="InvoicesFrom">Uninvoiced entries from</label>
+									<div class="InvoicesDiv" id="2">
+										<input type="text" name="Date" class="datepicker" placeholder="Choose">
+										to
+										<input type="text" name="Date" class="datepicker" placeholder="Choose">
+									</div>
+								</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col s12 m8 l6">
+								<h6>Group Items:</h6>
+							</div>
+							<div class="input-field col s12 m8 l6">
+								<select>
+									<option>Keep invoice items separate</option>
+									<option>By task</option>
+									<option>By project</option>
+									<option>By job or expense type</option>
+									<option>Group into a single </option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<div class="row">
+					<div class="col s12">
+						<table class="bordered" id="InvoicesTable">
+							<tr>
+								<th>#</th>
+								<th>Description</th>
+								<th>Quantity</th>
+								<th>x Cost</th>
+								<th>= Amount</th>
+								<th>Tax</th>
+							</tr>
+							<tr>
+								<td>1</td>
+								<td>
+									<input type="text" name="Description" style="border-bottom: none;">
+								</td>
+								<td>
+									<input type="number" name="Quantity" style="border-bottom: none;">
+								</td>
+								<td>
+									<input type="number" name="Cost" style="border-bottom: none;">
+								</td>
+								<td>
+									<input type="number" name="Amount" style="border-bottom: none;">
+								</td>
+								<td>
+									<select style="border: none;" id="taxSelect">
+										<option value="notax">No Tax</option>
+										<option value="tax">VAT (17,5%)</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="right" style="margin-top: 10px;">
+					<a class="btn btn-small grey" id="Discount">Add Discount</a>
+					<div class="row">
+						<div class="col s12 m8 l6">
+							<p>Subtotal</p>
+						</div>
+						<div class="col s12 m8 l6">
+							<input type="number" name="" value="0" readonly style="border-bottom: none;">
+						</div>
+						<div class="col s12">
+							<hr>
+						</div>
+					</div>
+					<div class="row" id="tax">
+							<div class="col s12 m8 l6">
+								<p>Tax</p>
+							</div>
+							<div class="col s12 m8 l6">
+								<input type="number" name="" value="0" readonly style="border-bottom: none;">
+							</div>
+							<div class="col s12">
+								<hr>
+							</div>
+						</div>
+					<div class="row">
+						<div class="col s12 m8 l6">
+							<p>Discount</p>
+						</div>
+						<div class="col s12 m8 l6">
+							<input type="number" name="" value="0" readonly style="border-bottom: none;">
+						</div>
+						<div class="col s12">
+							<hr>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12 m8 l6">
+							<b><p>Total Amount</p></b>
+						</div>
+						<div class="col s12 m8 l6">
+							<input type="number" name="" value="0" readonly style="border-bottom: none;">
+						</div>
+						<div class="col s12">
+							<hr>
+						</div>
+					</div>
+					
+				</div>
+				<div class="left" style="margin-top: 10px;">
+					<a class="btn btn-small grey" id="NewItem">New Item</a>
+					<br>
+					
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<div class="divider"></div>
+						<div class="section" style="background-color: #f1f1f1;cursor: hand;" id="AddNotesDiv">
+							<h6 style="margin-left: 20px;" id="AddNotes">Add Notes</h6>
+						</div>
+						<div class="divider"></div>
+						<div class="section" style="background-color: #f1f1f1" id="AddPrivateCommentDiv">
+							<h6 style="margin-left: 20px;" id="AddPrivateComment">Add a private comment that client can't see</h6>
+						</div>
+					</div>
+				</div>
+				<div class="right" style="margin-top: 10px">
+					<a href="#" class="btn blue waves-effect waves-light"><i class="material-icons left">add</i>Create Invoices</a>
+					<a href="Invoices.html" class="btn grey waves-effect waves-light"><i class="material-icons left">reply</i>Cancel</a>
+				</div>
+				
+			</form>
+		</div>
+	</main>
+	
+	
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Completed Projects</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+	
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+		header, main, footer {
+			padding-left: 250px;
+		}
+		
+		@media only screen and (max-width : 992px) {
+			header, main, footer {
+				padding-left: 0;
+			}
+		}
+		@font-face{
+			font-family: "Roboto";
+			src: url(Roboto-Regular.woff) format('woff');
+		}
+		body{
+			font-family:"Roboto",Verdana;
+		}
+		
+		
+	</style>
+</head>
+<body>
+	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".button-collapse").sideNav({menuWidth: 220});
+			$('.dropdown-button').dropdown({
+				inDuration: 300,
+				outDuration: 225,
+				constrainWidth: false, 
+				hover: false, 
+				gutter: 3, 
+				belowOrigin: true, 
+				alignment: 'left', 
+				stopPropagation: false 
+			}
+			);
+			$('.modal').modal();
+		});
+	</script>
+	
+	<ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+		<li>
+			<h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+		</li>
+		<li>
+			<div class="divider red accent-1"></div>
+		</li>
+		<li class="active">
+			<a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+		</li>
+		<li>
+			<a href="#!">My Work<i class="material-icons left small">computer</i></a>
+		</li>
+		<li>
+			<a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+		</li>
+		<li>
+			<a href="#!">Calendar<i class="material-icons left small">today</i></a>
+		</li>
+		<li>
+			<a href="#!">People<i class="material-icons left small">group</i></a>
+		</li>
+		<li>
+			<a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+		</li>
+		<li>
+			<a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		<li>
+			<a href="#!">Reports<i class="material-icons left small">report</i></a>
+		</li>
+		<li>
+			<a href="#!">Trash<i class="material-icons left small">delete</i></a>
+		</li>
+		<li>
+			<a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+		</li>
+		<li>
+			<a href="#!">Settings<i class="material-icons left small">settings</i></a>
+		</li>
+		<li><div class="divider red accent-1"></div></li>
+		
+		<li>
+			<img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+		</li>
+	</ul>
+	<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+	
+	<main>
+		
+		<!--Isi Nya Disini!-->
+		<div class="container">
+			<div class="row">
+				<a href="Projects.html" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Projects</a>
+			</div>
+			
+			<span class="flow-text">Completed Projects</span>
+			<hr>
+			<table class="striped">
+				<thead>
+					<tr>
+						<th>Name Of The Project</th>
+						<th>Client</th>
+						<th>Date Of Completion</th>
+						<th>More</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Hello World</td>
+						<td>Alfamart</td>
+						<td>Jan 29,2018</td>
+						<td>
+							<a href="#!" data-activates="moreHelloWorld" class="btn-flat dropdown-button"><i class="material-icons">more_horiz</i></a>
+						</td>
+						<ul class="dropdown-content" id="moreHelloWorld" style="width:fit-content">
+							<li><a href="#Reopen" class="modal-trigger">Reopen</a></li>
+							<li class="divider"></li>
+							<li><a href="#!">Star</a></li>
+							<li class="divider"></li>
+							<li><a href="#MoveToTrash" class="modal-trigger">Move To Trash</a></li>
+						</ul>
+						<!-- Reopen PRoject Modal -->
+						<div class="modal" id="Reopen">
+							<div class="modal-content">
+								<h5>Reopen "Projects 1"?</h5>							
+								<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6>
+								<div class="row">
+									<a href="#!" class="btn blue" style="text-transform: unset">Reopen</a>
+									<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+								</div>
+								
+							</div>
+						</div>
+						<!-- Reopen Project Modal -->
+						<!-- Delete PRoject Modal -->
+						<div class="modal" id="MoveToTrash">
+							<div class="modal-content">
+								<h5>Move "Hello World" to Trash?</h5>
+								<hr>									
+								<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
+								<hr>
+								<div class="row">
+									<a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
+									<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+								</div>
+								
+							</div>
+						</div>
+						<!-- Delete Project Modal -->
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+	</main>
+	<footer>
+		<!--Puter Kalo Emg Make Puter!-->
+	</footer>
+</body>
+</html>

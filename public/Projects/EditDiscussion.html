@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Discussion</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+    
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+        header, main, footer {
+            padding-left: 250px;
+        }
+        
+        @media only screen and (max-width : 992px) {
+            header, main, footer {
+                padding-left: 0;
+            }
+            
+        }
+        @font-face{
+            font-family: "Roboto";
+            src: url(Roboto-Regular.woff) format('woff');
+        }
+        body{
+            font-family:"Roboto",Verdana;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".button-collapse").sideNav({menuWidth: 220});
+            $('.dropdown-button').dropdown();
+            
+            $("#Subscribers").hide();
+            $('#Choose').on("click",function(){
+                $("#Subscribers").toggle();
+            });
+            $('#select-all').click(function(event) {   
+                if(this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = true;                       
+                    });   
+                }
+                if(!this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = false;                       
+                    });   
+                }
+            });
+            $('#select-none').click(function(event) {   
+                
+                $('#Subscribers :checkbox').each(function(){
+                    this.checked = false;
+                });                    
+                
+                
+            });
+            $('#upload_linkDissEdit').on("click",function(){
+                $('#upload_inputDissEdit').trigger('click');
+            });
+            function getUrlVars() {
+				var vars = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+				function(m,key,value) {
+					vars[key] = value;
+				});
+				return vars;
+			}
+            var projectsId = getUrlVars()['projectsId'];
+            var discId = getUrlVars()['discId'];
+            $('#DiscBack').attr('href','DiscussionDetail.html?projectsId='+projectsId+'&discId='+discId);
+            //GET discussion data
+            $.ajax({
+                url:'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
+                type:'GET',
+                async:false,
+                contentType:'application/json',
+                success:function(data){
+                    $('#Discussion_Name').val(data[0].Discussion_Name);
+                    $('#Discussion_About').text(data[0].Discussion_About);
+                    
+                }
+                
+            });
+            //Edit Discussion
+            $(function () {
+				$('#EditDisc').on('click', function () {
+                    document.location = "ProjectsDetail.html?projectsId="+projectsId;
+                    
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
+						type:'PUT',
+						async:true,
+                        data:{
+                            "Discussion_Name":$('#Discussion_Name').val(),
+                            "Discussion_About":$('#Discussion_About').val()
+                        },
+						dataType : 'json',
+						
+                    });
+                    
+				});
+			});
+        });
+    </script>
+    
+    <ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+        <li>
+            <h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+        </li>
+        <li>
+            <div class="divider red accent-1"></div>
+        </li>
+        <li class="active">
+            <a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+        </li>
+        <li>
+            <a href="#!">My Work<i class="material-icons left small">computer</i></a>
+        </li>
+        <li>
+            <a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+        </li>
+        <li>
+            <a href="#!">Calendar<i class="material-icons left small">today</i></a>
+        </li>
+        <li>
+            <a href="#!">People<i class="material-icons left small">group</i></a>
+        </li>
+        <li>
+            <a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+        </li>
+        <li>
+            <a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        <li>
+            <a href="#!">Reports<i class="material-icons left small">report</i></a>
+        </li>
+        <li>
+            <a href="#!">Trash<i class="material-icons left small">delete</i></a>
+        </li>
+        <li>
+            <a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+        </li>
+        <li>
+            <a href="#!">Settings<i class="material-icons left small">settings</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        
+        <li>
+            <img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+        </li>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    <header>
+        
+    </header>
+    <main>
+        
+        <!--Isi Nya Disini!-->
+        <div class="container">
+            
+            <a id="DiscBack" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Discussion</a>                 
+            <div class="row">
+                <form action="" method="get" class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input type="text" name="" id="Discussion_Name" class="validate">
+                            <label for="DiscussionName">Name of the Discussion*</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <textarea id="Discussion_About" class="materialize-textarea"></textarea>
+                            <label for="textarea1">What is this discussion about</label>
+                        </div>
+                        <div class="col s12">
+                            <p>
+                                <b>Attachments</b>
+                                <span style="float: right">
+                                    <a href="#" id="upload_linkDissEdit">Attach File</a>
+                                    <input type="file" id="upload_inputDissEdit" style="display:none">
+                                    or
+                                    <a href="#" class="dropdown-button btn-flat" data-activates="dropdown1" style="text-transform: unset">Attach From</a>
+                                    <ul id="dropdown1" class="dropdown-content">
+                                        <li><a href="#!">Google Drive</a></li>
+                                        <li><a href="#!">Dropbox Chooser</a></li>
+                                    </ul>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col s12">
+                            <p>
+                                <b>Subscribers</b>
+                                <span style="float:right" id="Choose">
+                                    <a href="#!">Choose</a>
+                                </span>
+                                <div id="Subscribers" class="section">
+                                    <fieldset>
+                                        <input type="checkbox" class="filled-in" id="select-all"/>
+                                        <label for="select-all">Select All .</label>
+                                        <a href="#!" id="select-none" class="grey-text">Select None</a>
+                                        <br>
+                                        <ul id="checkboxul">
+                                            <li>
+                                                <input type="checkbox" class="filled-in" id="Clients"/>
+                                                <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                            </li>
+                                            <li>
+                                                <input type="checkbox" class="filled-in" id="Teams1"/>
+                                                <label for="Teams1">hendysantoso911</label>
+                                            </li>
+                                            <li>
+                                                <input type="checkbox" class="filled-in" id="Teams2"/>
+                                                <label for="Teams2">nur.rizki21</label>
+                                            </li>
+                                            <li>
+                                                <input type="checkbox" class="filled-in" id="Teams3"/>
+                                                <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                            </li>
+                                        </ul>   
+                                        
+                                    </fieldset>
+                                </div>
+                            </p>
+                            
+                        </div>
+                        <hr>
+                        <div class="col s12">
+                            <input type="checkbox" class="filled-in" id="filled-in-box"/>
+                            <label for="filled-in-box">Hide this discussion from clients</label>
+                        </div>
+                        <div class="col s12">
+                            <div class="section">
+                                <a id="EditDisc" class="btn blue" type="submit">Edit Discussion</a>
+                                <a href="Projects1.html" class="btn grey lighten-3 black-text" type="submit">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <!--Puter Kalo Emg Make Puter!-->
+    </footer>
+</body>
+</html>
