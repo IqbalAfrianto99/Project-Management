@@ -86,26 +86,22 @@
                 return vars;
             }
             var projectsId = getUrlVars()['projectsId'];
-            $('#NewNoteForm').attr('action','http://localhost:3000/projects/'+projectsId+'/Notes');
-            $('#CreateNote').on('click',function(){
-                document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                /*
-                $.ajax({
+            
+            $(function(){
+                $('#CreateNote').on('click',function(){
+                    document.location = "ProjectsDetail.html?projectsId="+projectsId;
+                    $.ajax({
 						url: 'http://localhost:3000/projects/'+projectsId+'/Notes',
 						type:'POST',
 						async:false,
 						data: {
-							"Note_Title":$('#Content_Title').val(),
+							"Note_Title":$('#Note_Title').val(),
 							"Content": $('#Content').val(),
 						},
-						dataType : 'json',
-						
+						dataType : 'json',	
                     });
-                 */   
-            });
-            
-           
-           
+                });   
+            });   
             $('#BackNote').attr('href','ProjectsDetail.html?projectsId='+projectsId);
         });
     </script>
@@ -168,82 +164,82 @@
             
             <a id="BackNote" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Note</a>                 
             
-                <div class="row">
-                    <form id="NewNoteForm" method="POST">
-                        <div class="col s12 m12 l9">
-                            <p><b>Note Title:</b></p>
-                            <textarea name="Note_Title" id="Note_Title" class="notelook" style="padding-bottom:0;height:50px;resize:none;overflow:hidden" maxlength="255">
-                                
-                            </textarea>
-                            <p><b>Content:</b></p>
-                            <textarea name="Content" id="Content" cols="30" rows="10" class="notelook" style="padding-top:0;resize:vertical">
-                                
-                            </textarea>
-                        </div>
-                        <div class="col s12 m12 l3">
-                            <center>
-                                <button id="CreateNote" href="Projects.html" type="submit" class="btn blue waves-effect waves-light" style="margin:9px;text-transform:unset">Create Note</button>
-                                <a href="ProjectsDetail.html" class="btn white waves-effect waves-light black-text" style="margin:9px;text-transform:unset">Cancel</a>
-                            </center>
-                            <div class="row">
-                                <div class="col s12">
-                                    <p>
-                                        <b>Attachments</b>
-                                        <span style="float: right">
-                                            <a href="#" id="upload_linkNotesNew">Attach File</a>
-                                            <input type="file" id="upload_inputNotesNew" style="display:none">
-                                            or
-                                            <a href="#" class="dropdown-button btn-flat" data-activates="dropdown1" style="text-transform: unset;padding:0">Attach From</a>
-                                            <ul id="dropdown1" class="dropdown-content">
-                                                <li><a href="#!">Google Drive</a></li>
-                                                <li><a href="#!">Dropbox Chooser</a></li>
-                                            </ul>
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="col s12">
-                                        <p>
-                                            <b>Subscribers</b>
-                                            <span style="float:right" id="Choose">
-                                                <a href="#!">Choose</a>
-                                            </span>
-                                            <div id="Subscribers" class="section">
-                                                <fieldset>
-                                                    <input type="checkbox" class="filled-in" id="select-all"/>
-                                                    <label for="select-all">Select All .</label>
-                                                    <a href="#!" id="select-none" class="grey-text">Select None</a>
-                                                    <br>
-                                                    <ul id="checkboxul">
-                                                        <li>
-                                                            <input type="checkbox" class="filled-in" id="Clients"/>
-                                                            <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
-                                                        </li>
-                                                        <li>
-                                                            <input type="checkbox" class="filled-in" id="Teams1"/>
-                                                            <label for="Teams1">hendysantoso911</label>
-                                                        </li>
-                                                        <li>
-                                                            <input type="checkbox" class="filled-in" id="Teams2"/>
-                                                            <label for="Teams2">nur.rizki21</label>
-                                                        </li>
-                                                        <li>
-                                                            <input type="checkbox" class="filled-in" id="Teams3"/>
-                                                            <label for="Teams3">iqbalafrianto99@gmail.com</label>
-                                                        </li>
-                                                    </ul>   
-                                                    
-                                                </fieldset>
-                                            </div>
-                                        </p>
+            <div class="row">
+                
+                    <div class="col s12 m12 l9">
+                        <p><b>Note Title:</b></p>
+                        <textarea name="Note_Title" id="Note_Title" class="notelook" style="padding-bottom:0;height:50px;resize:none;overflow:hidden" maxlength="255">
+                            
+                        </textarea>
+                        <p><b>Content:</b></p>
+                        <textarea name="Content" id="Content" cols="30" rows="10" class="notelook" style="padding-top:0;resize:vertical">
+                            
+                        </textarea>
+                    </div>
+                    <div class="col s12 m12 l3">
+                        <center>
+                            <button id="CreateNote" href="Projects.html" type="button" class="btn blue waves-effect waves-light" style="margin:9px;text-transform:unset">Create Note</button>
+                            <a href="ProjectsDetail.html" class="btn white waves-effect waves-light black-text" style="margin:9px;text-transform:unset">Cancel</a>
+                        </center>
+                        <div class="row">
+                            <div class="col s12">
+                                <p>
+                                    <b>Attachments</b>
+                                    <span style="float: right">
+                                        <a href="#" id="upload_linkNotesNew">Attach File</a>
+                                        <input type="file" id="upload_inputNotesNew" style="display:none">
+                                        or
+                                        <a href="#" class="dropdown-button btn-flat" data-activates="dropdown1" style="text-transform: unset;padding:0">Attach From</a>
+                                        <ul id="dropdown1" class="dropdown-content">
+                                            <li><a href="#!">Google Drive</a></li>
+                                            <li><a href="#!">Dropbox Chooser</a></li>
+                                        </ul>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col s12">
+                                <p>
+                                    <b>Subscribers</b>
+                                    <span style="float:right" id="Choose">
+                                        <a href="#!">Choose</a>
+                                    </span>
+                                    <div id="Subscribers" class="section">
+                                        <fieldset>
+                                            <input type="checkbox" class="filled-in" id="select-all"/>
+                                            <label for="select-all">Select All .</label>
+                                            <a href="#!" id="select-none" class="grey-text">Select None</a>
+                                            <br>
+                                            <ul id="checkboxul">
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Clients"/>
+                                                    <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams1"/>
+                                                    <label for="Teams1">hendysantoso911</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams2"/>
+                                                    <label for="Teams2">nur.rizki21</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" class="filled-in" id="Teams3"/>
+                                                    <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                                </li>
+                                            </ul>   
+                                            
+                                        </fieldset>
                                     </div>
-                                    <div class="col s12">
-                                        <input type="checkbox" class="filled-in" id="HiddenClients">
-                                        <label for="HiddenClients">Hidden From Clients</label>
-                                    </div>
+                                </p>
+                            </div>
+                            <div class="col s12">
+                                <input type="checkbox" class="filled-in" id="HiddenClients">
+                                <label for="HiddenClients">Hidden From Clients</label>
                             </div>
                         </div>
-                    </form>
-                </div>  
+                    </div>
+               
+            </div>  
             
         </main>
         <footer>
