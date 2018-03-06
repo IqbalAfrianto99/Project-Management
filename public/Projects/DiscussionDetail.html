@@ -55,6 +55,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+            //add comment branch
             var socket = io.connect('http://localhost:3000');
 			$(".button-collapse").sideNav({menuWidth: 220});
 			$('select').material_select();
@@ -132,6 +133,7 @@
                     $('#Discussion_About').text(data[0].Discussion_About);
                     $('#Project_Name').text(data[0].Projects[0].Project_Name);
                     $("[id=DiscNameInModal]").text(data[0].Discussion_Name);
+                    //GET Comments 
                     var i;
                     var Comments=data[0].Comments.length;
                     for(i=0;i <= Comments;i++){
@@ -139,7 +141,6 @@
                         var person = data[0].Comments[i].person;
                         $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
                     }
-                    
                 }
                 
             });
@@ -310,16 +311,13 @@
 						success:function(data){
                             var comments = data.Comments.length;
                             var lascomments = data.Comments[comments - 1];
-                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");
-                            
+                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
                         }
                     });  
                     $('#Message').val(''); 
-                    Materialize.toast('Your Comment Added', 4000); 
+                    Materialize.toast('Your Comment Has Been Successfully Added', 4000); 
 				});
-            });
-            
-            
+            });     
 		});
 	</script>
 	
@@ -402,41 +400,14 @@
                             <label for="Message">Write a comment</label>
                         </div>        
                         <div id="AddComment">
-                            <div class="col s12">
-                                <p>
-                                    <b>Attachments</b>
-                                    <span style="float: right">
-                                        <a href="#" id="upload_linkDissDetail">Attach File</a>
-                                        <input type="file" id="upload_inputDissDetail" style="display:none">
-                                        or
-                                        <a href="#" class="dropdown-button btn-flat" data-activates="dropdown5" style="text-transform: unset">Attach From</a>
-                                        <ul id="dropdown5" class="dropdown-content">
-                                            <li><a href="#!">Google Drive</a></li>
-                                            <li><a href="#!">Dropbox Chooser</a></li>
-                                        </ul>
-                                    </span>
-                                </p>
-                            </div>
                             <div class="col s12" style="margin-bottom:10px">
                                 <a id="AddComment" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
                                 <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
                             </div>
                         </div>
-                        
                         <div id="comment">
-                            
-                            <div class="col s12 section">
-                                <h6><b class="person">hendysantoso911</b><span>8 days ago</span></h6>
-                                <p class="message">Hello World</p>
-                            </div>
-                            
-                            
-                            <div class="col s12 section">
-                                <h6><b class="person">iqbalafrianto99</b><span>8 days ago</span></h6>
-                                <p class="message">Hello World</p>
-                            </div>
+
                         </div>
-                        
                         <a href="#!" style="text-decoration:underline">Show history of changes</a>
                     </div>
                 </div>

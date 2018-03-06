@@ -25,10 +25,8 @@ module.exports = function(app) {
   .get(projects.read_discussion_by_projectsId_discussionId)
   .put(projects.update_a_discussion);
 
-
-
   app.route('/projects/:projectsId/Discussions/:discussionsId/comment')
-  .post(projects.add_comment);
+  .post(projects.add_disc_comment);
 
   //notes Routes
   app.route('/projects/:projectsId/Notes')
@@ -38,6 +36,9 @@ module.exports = function(app) {
   app.route('/projects/:projectsId/Notes/:notesId')
   .get(projects.read_notes_by_projectsId_notesId)
   .put(projects.update_a_notes);
+
+  app.route('/projects/:projectsId/Notes/:notesId/comment')
+  .post(projects.add_note_comment);
 
   //files Routes
   app.route('/projects/:projectsId/Files')

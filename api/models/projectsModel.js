@@ -39,7 +39,11 @@ var Notes = new Schema({
             enum:['Active','Trash']
         }],
         default:['Active']
-    } 
+    },
+    Comments:[{
+        person:{type:String},
+        message:{type:String}
+    }] 
 });
 var Files = new Schema({
     Projects:{
