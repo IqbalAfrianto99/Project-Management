@@ -132,11 +132,10 @@ exports.create_discussion_in_projects = function(req,res){
         res.json(discussions._id);
     });
 };
-exports.add_comment = function(req,res){
+exports.add_disc_comment = function(req,res){
     console.log('adding comment');
     console.log('person'+req.body.person);
     console.log('message'+req.body.message);
-    
     var comment = {person:req.body.person,message:req.body.message};
     Discussion.findOneAndUpdate({ _id: req.params.discussionsId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,discussions){
         if(err) 
@@ -223,6 +222,18 @@ exports.update_a_notes = function(req,res) {
         });
     }
 };
+exports.add_note_comment = function(req,res){
+    console.log('adding comment');
+    console.log('person'+req.body.person);
+    console.log('message'+req.body.message);
+    var comment = {person:req.body.person,message:req.body.message};
+    Notes.findOneAndUpdate({ _id: req.params.notesId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,notes){
+        if(err) 
+        res.send(err);
+        console.log('comment added');
+        res.json(notes);
+    });   
+}
 //Files
 exports.list_files_by_projectsId = function(req, res){
     Files.find({Projects:req.params.projectsId,Status:'Active'},{},{ sort: { 'created_at' : -1 } }).populate('Projects','Project_Name').exec(function (err,files){
