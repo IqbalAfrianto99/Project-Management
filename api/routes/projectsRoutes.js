@@ -8,7 +8,6 @@ module.exports = function(app) {
   .get(projects.list_all_projects)
   .post(projects.create_a_projects);
   
-  
   app.route('/projects/:projectsId')
   .get(projects.read_a_projects)
   .put(projects.update_a_projects)

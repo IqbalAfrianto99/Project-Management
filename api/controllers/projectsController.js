@@ -58,22 +58,12 @@ exports.create_a_projects = function(req, res) {
     
 };
 
-exports.read_a_projects = function(req, res) {
-    
+exports.read_a_projects = function(req, res) { 
     Projects.findById(req.params.projectsId, function(err, projects) {
         if (err)
         res.send(err);
-        res.json(projects);
-        
-        
+        res.json(projects);    
     });
-    
-    /*
-    Projects.findOne({Project_Name: "TEST DARI HTML"},function (err,projects){
-        var test= projects.Company.name(req.params.projectsId);
-        console.log(test);
-    });
-    */
 };
 
 exports.update_a_projects = function(req, res) {
@@ -83,10 +73,7 @@ exports.update_a_projects = function(req, res) {
         res.json(projects);
         console.log('Project With Id: '+projects._id+' Was Updated');
     });
-    //return res.redirect(301,"../../Projects/Projects.html");
 };
-
-
 exports.delete_a_projects = function(req, res) {
     Projects.remove({
         _id: req.params.projectsId
@@ -213,13 +200,6 @@ exports.update_a_notes = function(req,res) {
             res.send(err);
             
         });
-        /*
-        Notes.findByIdAndUpdate(req.params.notesId, { $set: { Status: header }}, {new: true}, function(err, notes) {
-            if (err)
-            res.send(err);
-            res.json(notes);
-        });  
-        */
     }
     else{    
         Notes.findOneAndUpdate({_id: req.params.notesId}, req.body, {new: true}, function(err, notes) {
@@ -230,9 +210,6 @@ exports.update_a_notes = function(req,res) {
     }
 };
 exports.add_note_comment = function(req,res){
-    console.log('adding comment');
-    console.log('person'+req.body.person);
-    console.log('message'+req.body.message);
     var comment = {person:req.body.person,message:req.body.message};
     Notes.findOneAndUpdate({ _id: req.params.notesId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,notes){
         if(err) 
