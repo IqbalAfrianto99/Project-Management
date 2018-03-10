@@ -96,6 +96,13 @@ var Projects = new Schema({
         type: String
     },
     Company:[CompanySchema],
+    Status:{
+        type:[{
+            type:String,
+            enum:['Active','Trash']
+        }],
+        default:['Active']
+    },
     Discussion:[{type:Schema.Types.ObjectId, ref: 'discussion'}],
     Notes:[{type:Schema.Types.ObjectId, ref:'notes'}],
     Files:[{type:Schema.Types.ObjectId, ref:'files'}]

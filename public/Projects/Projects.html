@@ -38,32 +38,19 @@
 		$(document).ready(function(){
 			$(".button-collapse").sideNav({menuWidth: 220});
 			$('select').material_select();
-			/*
-			$('.dropdown-button').dropdown({
-				inDuration: 300,
-				outDuration: 225,
-				constrainWidth: false, 
-				hover: false, 
-				gutter: 3, 
-				belowOrigin: true, 
-				alignment: 'left', 
-				stopPropagation: false 
-			});
-			$('.modal').modal();
-			*/
 			var notStarred;
 			notStarred = true;
-			$('#star').on("click",function(){
+			$('.star').on("click",function(){
 				
 				if(notStarred)
 				{
-					$('#staricon').css("color","#ffc107");
+					$('.staricon').css("color","#ffc107");
 					console.log("starred");
 					notStarred = false;
 				}
 				else
 				{
-					$('#staricon').css("color","#000000");
+					$('.staricon').css("color","#000000");
 					console.log("notStarred");
 					notStarred = true;	
 				}
@@ -89,7 +76,7 @@
 							stopPropagation: false 
 						});
 						$('.modal').modal();
-						$('#ProjectsCard').append("<div class='col s12 m6 l6'><div class='card red darken-2'><a href='ProjectsDetail.html?projectsId="+data[i]._id+"'><div class='card-content white-text'><span class='card-title'>"+data[i].Project_Name+"</span><h6>Status : <span class='yellow darken-3  white-text' style='padding: 5px'>"+data[i].Label+"</span></h6><h6>Clients: <span>"+data[i].Client_Company+"</span></h6><h6>Active : 1 Days Ago</h6></div></a><div class='card-action center'><a href='' class='dropdown-button' data-activates='"+String(data[i]._id)+"'><i class='material-icons'>more_horiz</i></a><a href='#' id='star'><i class='material-icons' style='color:black' id='staricon'>star</i></a><ul class='dropdown-content' id='"+String(data[i]._id)+"' style='width: fit-content'><li><a href='EditProject.html?projectsId="+data[i]._id+"' style='text-transform: unset'>Edit</a></li><li><a href='#!' style='text-transform: unset'>Manage Task Labels</a></li><li><a href='#Complete"+data[i]._id+"' class='modal-trigger' style='text-transform: unset'>Complete</a></li><li class='divider'></li><li><a href='#MoveToTrash"+data[i]._id+"' class='modal-trigger' style='text-transform: unset'>Move to Trash</a></li></ul><!-- Delete PRoject Modal --><div class='modal' id='MoveToTrash"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Move "+data[i].Project_Name+" to Trash?</h5><hr><h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6><hr><div class='row'><a href='#!' class='btn red' style='text-transform: unset'>Move to Trash</a><a href='#!' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Delete Project Modal --><!-- Complete Project Modal --><div class='modal' id='Complete"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Complete "+data[i].Project_Name+"?</h5><h6>This will complete all the tasks in the project and move it to the 'Completed Projects' list.</h6><div class='row'><a href='#!' class='btn blue' style='text-transform: unset'>Mark as sent</a><a href='#!' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Complete Project Modal --></div></div></div>");
+						$('#ProjectsCard').append("<div class='col s12 m6 l6'><div class='card red darken-2'><a href='ProjectsDetail.html?projectsId="+data[i]._id+"'><div class='card-content white-text'><span class='card-title'>"+data[i].Project_Name+"</span><h6>Status : <span class='yellow darken-3  white-text' style='padding: 5px'>"+data[i].Label+"</span></h6><h6>Clients: <span>"+data[i].Client_Company+"</span></h6><h6>Active : 1 Days Ago</h6></div></a><div class='card-action center'><a href='' class='dropdown-button' data-activates='"+String(data[i]._id)+"'><i class='material-icons'>more_horiz</i></a><a href='javascript:;' class='star'><i class='material-icons' style='color:black' id='staricon'>star</i></a><ul class='dropdown-content' id='"+String(data[i]._id)+"' style='width: fit-content'><li><a href='EditProject.html?projectsId="+data[i]._id+"' style='text-transform: unset'>Edit</a></li><li><a href='#!' style='text-transform: unset'>Manage Task Labels</a></li><li><a href='#Complete"+data[i]._id+"' class='modal-trigger' style='text-transform: unset'>Complete</a></li><li class='divider'></li><li><a href='#MoveToTrash"+data[i]._id+"' class='modal-trigger' style='text-transform: unset'>Move to Trash</a></li></ul><!-- Delete PRoject Modal --><div class='modal' id='MoveToTrash"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Move "+data[i].Project_Name+" to Trash?</h5><hr><h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6><hr><div class='row'><a href='javascript:;' class='btn red fordel' style='text-transform: unset' value='"+data[i]._id+"'>Move to Trash</a>&nbsp;<a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Delete Project Modal --><!-- Complete Project Modal --><div class='modal' id='Complete"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Complete "+data[i].Project_Name+"?</h5><h6>This will complete all the tasks in the project and move it to the 'Completed Projects' list.</h6><div class='row'><a href='#!' class='btn blue' style='text-transform: unset'>Mark as sent</a><a href='#!' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Complete Project Modal --></div></div></div>");
 						$('.dropdown-button').dropdown({
 							inDuration: 300,
 							outDuration: 225,
@@ -106,7 +93,25 @@
 					
 				}
 			});
-			
+			//MOVE Projects TO TRASH
+            $(function () {
+                $(".btn.red.fordel").click(function() {
+                    var ProjectsIdVal= $(this).attr('value');
+					
+					
+                    $('#MoveToTrash'+ProjectsIdVal).modal('close');
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
+						type:'DELETE',
+						async:true,
+						success:function(data){
+							Materialize.toast(data.message, 4000,'',function(){document.location = "Projects.html"});
+						}
+						
+					});
+					
+                });	
+            });
 		});
 	</script>
 	
@@ -200,63 +205,7 @@
 				</div>
 			</div>
 			<div class="row" id="ProjectsCard">
-				<div class="col s12 m6 l6">
-					<div class="card red darken-2">
-						<a href="Projects1.html">
-							<div class="card-content white-text">
-								
-								<span class="card-title">Projects 1</span>
-								<h6>Status : <span class="yellow darken-3  white-text" style="padding: 5px">INPROGRESS</span></h6>
-								<h6>Clients: <span>Brilyan Trimatra Utama</span></h6>
-								<h6>Active : 1 Days Ago</h6>
-							</div>
-						</a>
-						<div class="card-action center">
-							<a href="#" class="dropdown-button" data-activates="Projects1"><i class="material-icons">more_horiz</i></a>
-							<a href="#" id="star"><i class="material-icons" style="color:black" id="staricon">star</i></a>
-							<ul class="dropdown-content" id="Projects1" style="width: fit-content">
-								<li><a href="EditProject.html" style="text-transform: unset">Edit</a></li>
-								<li><a href="#!" style="text-transform: unset">Manage Task Labels</a></li>
-								<li><a href="#Complete" class="modal-trigger" style="text-transform: unset">Complete</a></li>
-								<li class="divider"></li>
-								<li><a href="#MoveToTrash" class="modal-trigger" style="text-transform: unset">Move to Trash</a></li>
-							</ul>
-							<!-- Delete PRoject Modal -->
-							<div class="modal" id="MoveToTrash">
-								<div class="modal-content">
-									<div class="container">
-										<h5>Move "Projects 1" to Trash?</h5>
-										<hr>									
-										<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
-										<hr>
-										<div class="row">
-											<a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
-											<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
-										</div>
-										
-									</div>
-								</div>
-							</div>
-							<!-- Delete Project Modal -->
-							<!-- Complete Project Modal -->
-							<div class="modal" id="Complete">
-								<div class="modal-content">
-									<div class="container">
-										<h5>Complete "Projects 1"?</h5>
-										
-										<h6>This will complete all the tasks in the project and move it to the "Completed Projects" list.</h6>
-										
-										<div class="row">
-											<a href="#!" class="btn blue" style="text-transform: unset">Mark as sent</a>
-											<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- Complete Project Modal -->
-						</div>
-					</div>
-				</div>
+				
 			</div>
 		</main>
 		<footer>

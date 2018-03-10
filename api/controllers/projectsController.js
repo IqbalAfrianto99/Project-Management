@@ -9,7 +9,7 @@ Files = mongoose.model('files');
 
 //Date Stuff
 var monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+"July", "August", "September", "October", "November", "December"
 ];
 var dt = new Date();
 
@@ -34,7 +34,7 @@ exports.list_all_projects = function(req, res) {
         });  
     }
     else{
-        Projects.find({},{},{ sort: { 'created_at' : -1 } }, function(err, projects) {
+        Projects.find({Status:'Active'},{},{ sort: { 'created_at' : -1 } }, function(err, projects) {
             if (err)
             res.send(err);
             res.json(projects);
@@ -75,12 +75,20 @@ exports.update_a_projects = function(req, res) {
     });
 };
 exports.delete_a_projects = function(req, res) {
+    /*
     Projects.remove({
         _id: req.params.projectsId
     }, function(err, task) {
         if (err)
         res.send(err);
         res.json({ message: 'Projects successfully deleted' });
+    });
+    */
+    Projects.findOneAndUpdate({_id: req.params.projectsId}, { $set: { Status: 'Trash' }}, {new: true},function(err, projects) {
+        if (err)
+        {res.send(err);}
+        res.json({message:'Projects Moved To Trash'});
+        
     });
 };
 //Discussion
@@ -99,7 +107,7 @@ exports.read_discussion_by_projectsId_discussionId = function(req, res){
         res.send(err);
         res.json(discussions);
         
-       
+        
     }); 
 };
 exports.create_discussion_in_projects = function(req,res){
@@ -254,7 +262,7 @@ exports.create_files_in_projects = function(req,res){
         // Check mime
         const mimetype = filetypes.test(file.mimetype);
         console.log(file.mimetype);
-
+        
         if(mimetype && extname){
             return cb(null,true);
         } else {
@@ -296,16 +304,6 @@ exports.create_files_in_projects = function(req,res){
         }
     }); 
 };
-/*
-exports.read_files_by_projectsId_notesId = function(req, res){
-    Notes.find({_id:req.params.notesId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,notes){
-        if(err)
-        res.send(err);
-        res.json(notes);
-        
-    }); 
-};
-*/
 exports.move_file_to_trash = function(req,res) {
     var header = req.headers['movetotrash'];
     if(header != null){

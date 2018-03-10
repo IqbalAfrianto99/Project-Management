@@ -192,7 +192,7 @@
             });
             //Check File type
             function isImage(string) {
-               // var ext = string.substr(string.lastIndexOf('.') + 1);
+                // var ext = string.substr(string.lastIndexOf('.') + 1);
                 var ext = string.split('.').pop();
                 if(/jpeg|jpg|png|gif/i.test(ext)){
                     return '../ProjectUploads/'+projectsId+'/'+string;
@@ -438,16 +438,16 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs red-text text-darken-2 default">
-                    <li class="tab col s1"><a href="#test1" style="text-transform:unset">Tasks</a></li>
-                    <li class="tab col s2"><a href="#test2" style="text-transform:unset">Discussion</a></li>
-                    <li class="tab col s1"><a href="#test3" style="text-transform:unset">Files</a></li>
+                    <li class="tab col s1"><a href="#Tasks" style="text-transform:unset">Tasks</a></li>
+                    <li class="tab col s2"><a href="#Discussions" style="text-transform:unset">Discussion</a></li>
+                    <li class="tab col s1"><a href="#Files" style="text-transform:unset">Files</a></li>
                     <li class="tab col s2"><a href="#Notes"  class="active" style="text-transform:unset">Notes</a></li>
-                    <li class="tab col s1"><a href="#test5" style="text-transform:unset">Time</a></li>
-                    <li class="tab col s2"><a href="#test6" style="text-transform:unset">Expenses</a></li>
-                    <li class="tab col s3"><a href="#test7" style="text-transform:unset">Activity</a></li>
+                    <li class="tab col s1"><a href="#Time" style="text-transform:unset">Time</a></li>
+                    <li class="tab col s2"><a href="#Expenses" style="text-transform:unset">Expenses</a></li>
+                    <li class="tab col s3"><a href="#Activity" style="text-transform:unset">Activity</a></li>
                 </ul>
             </div>
-            <div id="test1" class="col s12">
+            <div id="Tasks" class="col s12">
                 <div class="row">
                     <div class="col s12 m8 l8">
                         <p>hello</p>
@@ -457,7 +457,7 @@
                     </div>
                 </div>
             </div>
-            <div id="test2" class="col s12">
+            <div id="Discussions" class="col s12">
                 <br>
                 <a id="NewDisc"  class="btn red lighten-1 waves-effect waves-light"><i class="material-icons left">add</i>New Discussion</a>
                 
@@ -466,100 +466,111 @@
                 <div id="DiscsussionByProject">
                 </div>
             </div>             
-        </div>
-        <!--Files Section-->
-        <div id="test3" class="col s12">
-            <div class="row">
-                <div class="col s112 ">
-                    <form id="FileForm" method="POST" enctype="multipart/form-data">
-                        <div class="file-field input-field">
-                            <div class="btn grey">
-                                <span>File</span>
-                                <input id="FileInput" name="myImage" type="file" size="15MB">
+            <!--Files Section-->
+            <div id="Files" class="col s12">
+                <div class="row">
+                    <div class="col s112 ">
+                        <form id="FileForm" method="POST" enctype="multipart/form-data">
+                            <div class="file-field input-field">
+                                <div class="btn grey">
+                                    <span>File</span>
+                                    <input id="FileInput" name="myImage" type="file" size="15MB">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
                             </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text">
-                            </div>
+                            <button id="Filesubmit" type="button" class="btn">Submit</button>
+                        </form>
+                        <div id="progress" class="progress">
+                            <div class="indeterminate"></div>
                         </div>
-                        <button id="Filesubmit" type="button" class="btn">Submit</button>
-                    </form>
-                    <div id="progress" class="progress">
-                        <div class="indeterminate"></div>
                     </div>
                 </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col s12">
-                    <p><b><span>Jan 31,2018</span></b></p>
+                <br>
+                <div class="row">
+                    <div class="col s12">
+                        <p><b><span>Jan 31,2018</span></b></p>
+                    </div>
                 </div>
-            </div>
-            <!--FILE CARDS-->
-            <div id="FilesCard" class="row">
-                <div class="col s12 m6 l3">
-                    <div class="card">
-                        <div class="card-image">
-                            <img src="../ProjectUploads/5a82aa152bdadf218c5143ca/xmen.jpg">
-                            
-                            <a class="btn-floating halfway-fab waves-effect waves-light red dropdown-button" data-activates="download"><i class="material-icons">more_horiz</i></a>
-                            <ul id="download" class="dropdown-content">
-                                <li><a href="sample.png" download="sample.png">Download</a></li>
-                                <li><a href="#!">Hidden From Clients</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#MoveToTrashFiles" class="modal-trigger">Move to Trash</a></li>
-                            </ul>
-                            <!-- Move To Trash Files Modal -->
-							<div class="modal" id="MoveToTrashFiles">
-								<div class="modal-content">
-									<div class="container">
-                                        <h5>Move "sample.png" to Trash?</h5>
-                                        
-                                        <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
-                                        
-                                        <div class="row">
-                                            <a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
-                                            <a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                <!--FILE CARDS-->
+                <div id="FilesCard" class="row">
+                    <div class="col s12 m6 l3">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="../ProjectUploads/5a82aa152bdadf218c5143ca/xmen.jpg">
+                                
+                                <a class="btn-floating halfway-fab waves-effect waves-light red dropdown-button" data-activates="download"><i class="material-icons">more_horiz</i></a>
+                                <ul id="download" class="dropdown-content">
+                                    <li><a href="sample.png" download="sample.png">Download</a></li>
+                                    <li><a href="#!">Hidden From Clients</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#MoveToTrashFiles" class="modal-trigger">Move to Trash</a></li>
+                                </ul>
+                                <!-- Move To Trash Files Modal -->
+                                <div class="modal" id="MoveToTrashFiles">
+                                    <div class="modal-content">
+                                        <div class="container">
+                                            <h5>Move "sample.png" to Trash?</h5>
+                                            
+                                            <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                            
+                                            <div class="row">
+                                                <a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                                <a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                            </div>
+                                            
                                         </div>
-                                        
-									</div>
-								</div>
-							</div>
-							<!-- Move To Trash Files Modal -->
-                        </div>
-                        <div class="card-content">
-                            <h5>Sample.png</h5>
-                            <span>by iqbalafrianto on <span>Jan 31 , 2018</span></span>
+                                    </div>
+                                </div>
+                                <!-- Move To Trash Files Modal -->
+                            </div>
+                            <div class="card-content">
+                                <h5>Sample.png</h5>
+                                <span>by iqbalafrianto on <span>Jan 31 , 2018</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Notes Section!-->
-        <div id="Notes" class="col s12">
-            <div class="row">
-                <div class="col s10">
-                    <a id="NewNote"  class="btn red lighten-1 waves-effect waves-light"><i class="material-icons left">add</i>New Note</a>
+            <!-- Notes Section!-->
+            <div id="Notes" class="col s12">
+                <div class="row">
+                    <div class="col s10">
+                        <a id="NewNote"  class="btn red lighten-1 waves-effect waves-light"><i class="material-icons left">add</i>New Note</a>
+                    </div>
+                    <div class="col s2">
+                        
+                        <select name="" id="" class="browser-default">
+                            <option value="">Recently Updated</option>
+                            <option value="">Newest First</option>
+                            <option value="">Oldest First</option>
+                            <option value="">A-Z</option>
+                            <option value="">Z-A</option>
+                        </select>
+                        <label>Sort by</label>
+                    </div>
                 </div>
-                <div class="col s2">
+                <div class="row" id="NotesCard">
                     
-                    <select name="" id="" class="browser-default">
-                        <option value="">Recently Updated</option>
-                        <option value="">Newest First</option>
-                        <option value="">Oldest First</option>
-                        <option value="">A-Z</option>
-                        <option value="">Z-A</option>
-                    </select>
-                    <label>Sort by</label>
                 </div>
             </div>
-            <div class="row" id="NotesCard">
+            <div id="Time" class="col s12">   
                 
+                    <p>time</p>
+         
             </div>
+            <div id="Expenses" class="col s12">   
+                
+                    <p>Expense</p>
+            </div>
+            <div id="Activity" class="col s12">   
+                <p>Activity</p>
         </div>
-    </div>
-</main>
-<footer>
-    <!--Puter Kalo Emg Make Puter!-->
-</footer>
+        </div>
+    </main>
+    <footer>
+        <!--Puter Kalo Emg Make Puter!-->
+    </footer>
 </body>
 </html>
