@@ -47,6 +47,46 @@
 			}
 			);
 			$('.modal').modal();
+			$.ajax({
+				url:'http://localhost:3000/projects',
+				type:'GET',
+				async:false,
+				contentType:'application/json',
+				headers:{
+					"projects":"COMPLETE"
+				},
+				success:function(data){
+
+					var i = 0;
+					$.each(data,function(key,val){
+						$('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+						$('.modal').modal();
+						$('#CompletedProjects').append("<tr><td>"+data[i].Project_Name+"</td><td>"+data[i].Client_Company+"</td><td>Jan 29,2018</td><td><a href='javascript:;' data-activates='DD"+data[i]._id+"' class='btn-flat dropdown-button'><i class='material-icons'>more_horiz</i></a></td><ul class='dropdown-content' id='DD"+data[i]._id+"' style='width:fit-content'><li><a href='#Reopen"+data[i]._id+"' class='modal-trigger'>Reopen</a></li><li class='divider'></li><li><a href='javascript:;'>Star</a></li><li class='divider'></li><li><a href='#MoveToTrash"+data[i]._id+"' class='modal-trigger'>Move To Trash</a></li></ul><!-- Reopen PRoject Modal --><div class='modal' id='Reopen"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Reopen "+data[i].Project_Name+" ?</h5>							<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6><div class='row'><a href='javascript:;' class='btn blue' style='text-transform: unset'>Reopen</a><a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Reopen Project Modal --><!-- Delete PRoject Modal --><div class='modal' id='MoveToTrash"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Move '"+data[i].Project_Name+"' to Trash?</h5><hr><h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6><hr><div class='row'><a href='javascript:;' class='btn red' style='text-transform: unset'>Move to Trash</a><a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Delete Project Modal --></tr>");
+						$('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+						$('.modal').modal();
+						i++;
+					});
+					
+				}
+			});
 		});
 	</script>
 	
@@ -118,7 +158,7 @@
 						<th>More</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="CompletedProjects">
 					<tr>
 						<td>Hello World</td>
 						<td>Alfamart</td>
@@ -136,11 +176,13 @@
 						<!-- Reopen PRoject Modal -->
 						<div class="modal" id="Reopen">
 							<div class="modal-content">
-								<h5>Reopen "Projects 1"?</h5>							
-								<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6>
-								<div class="row">
-									<a href="#!" class="btn blue" style="text-transform: unset">Reopen</a>
-									<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+								<div class="container">
+									<h5>Reopen "Projects 1"?</h5>							
+									<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6>
+									<div class="row">
+										<a href="#!" class="btn blue" style="text-transform: unset">Reopen</a>
+										<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+									</div>
 								</div>
 								
 							</div>
@@ -149,13 +191,15 @@
 						<!-- Delete PRoject Modal -->
 						<div class="modal" id="MoveToTrash">
 							<div class="modal-content">
-								<h5>Move "Hello World" to Trash?</h5>
-								<hr>									
-								<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
-								<hr>
-								<div class="row">
-									<a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
-									<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+								<div class="container">
+									<h5>Move "Hello World" to Trash?</h5>
+									<hr>									
+									<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
+									<hr>
+									<div class="row">
+										<a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
+										<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+									</div>
 								</div>
 								
 							</div>

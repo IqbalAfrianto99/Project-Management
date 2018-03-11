@@ -24,8 +24,8 @@ NOT EQUAL TO
 { $ne: 'Active' }
 */
 exports.list_all_projects = function(req, res) {
-    var header = req.headers['test'];
-    if(header != null){
+    var header = req.headers['projects'];
+    if(header != null && header != 'COMPLETE'){
         Projects.find({"Company":{$elemMatch:{"name":header}}}, function(err, projects) {
             if (err)
             res.send(err);
@@ -33,8 +33,16 @@ exports.list_all_projects = function(req, res) {
             
         });  
     }
+    else if(header != null && header == 'COMPLETE'){
+        Projects.find({Status:'Active',Label:'COMPLETED'},{},{ sort: { 'created_at' : 1 } }, function(err, projects) {
+            if (err)
+            res.send(err);
+            res.json(projects);
+            
+        });
+    }
     else{
-        Projects.find({Status:'Active'},{},{ sort: { 'created_at' : -1 } }, function(err, projects) {
+        Projects.find({Status:'Active',Label:{ $ne: 'COMPLETED'}},{},{ sort: { 'created_at' : 1 } }, function(err, projects) {
             if (err)
             res.send(err);
             res.json(projects);
