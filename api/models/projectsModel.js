@@ -45,6 +45,26 @@ var Notes = new Schema({
         message:{type:String}
     }] 
 });
+var Tasks = new Schema({
+    Projects:{
+        type: Schema.Types.ObjectId,ref: 'projects'
+    },
+    Task_Name:{
+        type:String
+    },
+    Description:{
+        type:String
+    },
+    Label:{
+        type:String
+    },
+    Assignee:{
+        type:String
+    },
+    Due_Date:{
+        type:String
+    }
+});
 var Files = new Schema({
     Projects:{
         type: Schema.Types.ObjectId,ref: 'projects'
@@ -105,7 +125,8 @@ var Projects = new Schema({
     },
     Discussion:[{type:Schema.Types.ObjectId, ref: 'discussion'}],
     Notes:[{type:Schema.Types.ObjectId, ref:'notes'}],
-    Files:[{type:Schema.Types.ObjectId, ref:'files'}]
+    Files:[{type:Schema.Types.ObjectId, ref:'files'}],
+    Tasks:[{type:Schema.Types.ObjectId, ref:'tasks'}]
 });
 
 
@@ -114,6 +135,7 @@ module.exports=mongoose.model('discussions',Discussion);
 module.exports=mongoose.model('projects', Projects);
 module.exports=mongoose.model('notes',Notes);
 module.exports=mongoose.model('files',Files);
+module.exports=mongoose.model('tasks',Tasks);
 
 
 
