@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+    
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+        header, main, footer {
+            padding-left: 250px;
+        }
+        
+        @media only screen and (max-width : 992px) {
+            header, main, footer {
+                padding-left: 0;
+            }
+            
+        }
+        @font-face{
+            font-family: "Roboto";
+            src: url(Roboto-Regular.woff) format('woff');
+        }
+        body{
+            font-family:"Roboto",Verdana;
+        }
+        .btn{
+            text-transform: unset;
+        }
+        
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".button-collapse").sideNav({menuWidth: 220});
+            $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, 
+                hover: false, 
+                gutter: 3, 
+                belowOrigin: true, 
+                alignment: 'left', 
+                stopPropagation: false
+            });
+            $('.modal').modal();
+            $('.datepicker').pickadate({
+                selectMonths: true, 
+                selectYears: 15, 
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: true 
+            });
+            $("#Subscribers").hide();
+            $('#Choose').on("click",function(){
+                $("#Subscribers").toggle();
+            });
+            $('#select-all').click(function(event) {   
+                if(this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = true;                       
+                    });   
+                }
+                if(!this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = false;                       
+                    });   
+                }
+            });
+            $('#select-none').click(function(event) {   
+                
+                $('#Subscribers :checkbox').each(function(){
+                    this.checked = false;
+                });                    
+                
+                
+            });
+            $('#upload_linkDissNew').on("click",function(){
+                $('#upload_inputDissNew').trigger('click');
+            });
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+            var projectsId = getUrlVars()['projectsId'];
+            
+            $('#TaskBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            
+            
+            $('#SubTask').hide();
+            $('#EditSubTask').hide();
+            
+            $('#AddSubTaskForm').on('click',function(){
+                $(this).hide();
+                $('#SubTask').show();
+            });
+            
+            $('#EditSubTaskbtn').on('click',function(){
+                $('#Subtask').hide();
+                $('#EditSubTask').show();
+            });
+            
+            $('#CancelEditSubTask').on('click',function(){
+                $('#Subtask').show();
+                $('#EditSubTask').hide();
+            });
+            
+            $('#CancelSubTask').on('click',function(){
+                $('#SubTask').hide();
+                $('#AddSubTaskForm').show();
+            });
+            
+            $('#AddComment').hide();
+            
+            $('#Message').on('focus',function(){
+                $('#AddComment').show();
+            });
+            $('#Message').on('blur',function(){
+                
+                if(!$.trim($("#Message").val())){
+                    $('#AddComment').hide()
+                }
+                else{
+                    $('#AddComment').show()
+                }
+                
+            });
+        });
+    </script>
+    
+    <ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+        <li>
+            <h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+        </li>
+        <li>
+            <div class="divider red accent-1"></div>
+        </li>
+        <li class="active">
+            <a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+        </li>
+        <li>
+            <a href="#!">My Work<i class="material-icons left small">computer</i></a>
+        </li>
+        <li>
+            <a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+        </li>
+        <li>
+            <a href="#!">Calendar<i class="material-icons left small">today</i></a>
+        </li>
+        <li>
+            <a href="#!">People<i class="material-icons left small">group</i></a>
+        </li>
+        <li>
+            <a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+        </li>
+        <li>
+            <a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        <li>
+            <a href="#!">Reports<i class="material-icons left small">report</i></a>
+        </li>
+        <li>
+            <a href="#!">Trash<i class="material-icons left small">delete</i></a>
+        </li>
+        <li>
+            <a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+        </li>
+        <li>
+            <a href="#!">Settings<i class="material-icons left small">settings</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        
+        <li>
+            <img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+        </li>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    <header>
+        
+    </header>
+    <main>
+        
+        <!--Isi Nya Disini!-->
+        
+        
+        <a id="TaskBack" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Task</a> 
+        
+        
+        <div class="row">
+            <div class="col s12 m8 l9">
+                <p class="grey-text">
+                    <span>Project_Name.</span><span>Task Name</span>Created by <span>uploader </span>on <span>Date</span>
+                    <a class="btn btn-flat" style="text-transform:unset">Edit Task</a>
+                    <a href="#MoveToTrashTask" class="btn btn-flat modal-trigger" style="text-transform:unset"><i class="material-icons">delete</i></a>
+                    <a class="btn btn-flat dropdown-button" data-activates="TaskMore" style="text-transform:unset"><i class="material-icons">more_horiz</i></a>
+                    <ul id="TaskMore" class="dropdown-content">
+                        <li><a>Duplicate</a></li>
+                        <li><a>Create Recurring Task</a></li>
+                        <li><a>Move / Copy To Projects</a></li>
+                        <li class="divider"></li>
+                        <li><a>Access Logs</a></li>
+                    </ul>
+                </p> 
+                
+                <div class="row">
+                    <div class="col s12">
+                        <input type="checkbox" class="filled-in" id="TaskName"/>
+                        <label for="TaskName" class="black-text"><h5><b>Task Name</b></h5></label>
+                        <p>Description</p>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="col s12">
+                        <h6><b>Subtasks</b></h6>
+                        <p id="Subtask" class="subtask">
+                            <input type="checkbox" class="filled-in" id="filled-in-box"/>
+                            <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask"><i class="material-icons" >more_horiz</i></a>
+                        </p>
+                        <ul id="DDSubTask" class="dropdown-content">
+                            <li><a id="EditSubTaskbtn">Edit</a></li>
+                            <li><a href="#MoveToTrashSubTask" class="modal-trigger">Move To Trash</a></li>
+                        </ul>
+                        <!-- Move To  Trash SubTask Modal -->
+                        <div class="modal" id="MoveToTrashSubTask">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move "Task" to Trash?</h5>
+                                    
+                                    <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                    
+                                    <div class="row">
+                                        <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move To Trash SubTask Modal -->
+                        <!-- Move To  Trash Task Modal -->
+                        <div class="modal" id="MoveToTrashTask">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move "Task" to Trash?</h5>
+                                    
+                                    <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                    
+                                    <div class="row">
+                                        <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move To Trash Task Modal -->
+                        <div class="row" id="EditSubTask">
+                            <div class="col s12 m10 l9">
+                                <input type="text" placeholder="Name Of The Subtask">
+                            </div>
+                            <div class="col s12 m12 l3">
+                                <select class="browser-default">
+                                    <option value="" disabled selected>Assignee</option>
+                                    <option value="">iqbalafrianto99</option>
+                                    <option value="">nur.rizki</option>
+                                    <option value="">hendysantoso911</option>
+                                </select>
+                            </div>
+                            <div class="col s12">
+                                <a class="btn blue">Update</a>
+                                <a class="btn white black-text" id="CancelEditSubTask">Cancel</a>
+                            </div>
+                        </div>
+                        <a class="btn red darken-1" id="AddSubTaskForm">Add subtask</a>
+                        <div class="row" id="SubTask">
+                            <div class="col s12 m10 l9">
+                                <input type="text" placeholder="Name Of The Subtask">
+                            </div>
+                            <div class="col s12 m12 l3">
+                                <select class="browser-default">
+                                    <option value="" disabled selected>Assignee</option>
+                                    <option value="">iqbalafrianto99</option>
+                                    <option value="">nur.rizki</option>
+                                    <option value="">hendysantoso911</option>
+                                </select>
+                            </div>
+                            <div class="col s12">
+                                <a class="btn blue">Add</a>
+                                <a class="btn white black-text" id="CancelSubTask">Cancel</a>
+                            </div>
+                        </div>
+                        <div class="divider" style="margin-top:25px;margin-bottom:15px;"></div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="Message" class="materialize-textarea"></textarea>
+                                <label for="Message">Write a comment</label>
+                            </div>        
+                            <div id="AddComment">
+                                <div class="col s12" style="margin-bottom:10px">
+                                    <a id="AddComment" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
+                                    <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
+                                </div>
+                            </div>
+                            <div id="comment">
+                                <div class='col s12 section'><h6><b>Person </b><span>8 days ago</span></h6><p>Message</p></div>
+                            </div>
+                            
+                        </div>
+                        <div class="divider" style="margin-top:25px;margin-bottom:15px;"></div>
+                        <a href="#!" style="text-decoration:underline">Show history of changes</a>
+                    </div>
+                </div> 
+            </div>
+            <div class="col s12 m4 l3">
+                <h6><b>Task List</b></h6>
+                <select class="browser-default">
+                    <option value="">Inbox</option>
+                </select>
+                <p><b>Assignee</b></p>
+                <select class="browser-default">
+                    <option value="">iqbalafrianto99</option>
+                    <option value="">nur.rizki</option>
+                    <option value="">hendysantoso911</option>
+                </select>
+                <p><b>Due On</b></p>
+                <input type="text" class="datepicker">
+                <p><b>Time Estimation</b></p>
+                <a href="#">Set...</a><br>
+                <input type="checkbox" class="filled-in" id="HiddenClientsTask">
+                <label for="HiddenClientsTask">Hidden From Clients</label>
+                <input type="checkbox" class="filled-in" id="HiddenPriority">
+                <label for="HiddenPriority">Hidden From Clients</label>
+                <p>
+                    <b>Subscribers</b>
+                    <span style="float:right">
+                        <a href="javascript:;" id="Choose">Choose</a>
+                    </span>
+                    <div id="Subscribers">  
+                        <fieldset>
+                            <input type="checkbox" class="filled-in" id="select-all"/>
+                            <label for="select-all">Select All .</label>
+                            <a href="javascript:;" id="select-none" class="grey-text">Select None</a>
+                            <br>
+                            
+                            <ul id="checkboxul">
+                                <li>
+                                    
+                                    <input type="checkbox" class="filled-in" id="Clients"/>
+                                    <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                    
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams1"/>
+                                    <label for="Teams1">hendysantoso911</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams2"/>
+                                    <label for="Teams2">nur.rizki21</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams3"/>
+                                    <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                </li>
+                            </ul>   
+                        </fieldset>   
+                    </div>
+                    <div class="section">
+                        <input type="checkbox" class="filled-in" id="HiddenFromClients"/>
+                        <label for="HiddenFromClients">Hidden From Clients</label>
+                    </div>
+                </p>
+            </div>
+        </div>
+        
+    </main>
+    <footer>
+        <!--Puter Kalo Emg Make Puter!-->
+    </footer>
+</body>
+</html>

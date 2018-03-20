@@ -4,7 +4,7 @@
 	<title>Completed Projects</title>
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	
-	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"/>
 	
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -12,7 +12,9 @@
 		header, main, footer {
 			padding-left: 250px;
 		}
-		
+		main{
+			padding-right: 50px;
+		}
 		@media only screen and (max-width : 992px) {
 			header, main, footer {
 				padding-left: 0;
@@ -56,7 +58,7 @@
 					"projects":"COMPLETE"
 				},
 				success:function(data){
-
+					
 					var i = 0;
 					$.each(data,function(key,val){
 						$('.dropdown-button').dropdown({
@@ -70,7 +72,8 @@
 							stopPropagation: false 
 						});
 						$('.modal').modal();
-						$('#CompletedProjects').append("<tr><td>"+data[i].Project_Name+"</td><td>"+data[i].Client_Company+"</td><td>Jan 29,2018</td><td><a href='javascript:;' data-activates='DD"+data[i]._id+"' class='btn-flat dropdown-button'><i class='material-icons'>more_horiz</i></a></td><ul class='dropdown-content' id='DD"+data[i]._id+"' style='width:fit-content'><li><a href='#Reopen"+data[i]._id+"' class='modal-trigger'>Reopen</a></li><li class='divider'></li><li><a href='javascript:;'>Star</a></li><li class='divider'></li><li><a href='#MoveToTrash"+data[i]._id+"' class='modal-trigger'>Move To Trash</a></li></ul><!-- Reopen PRoject Modal --><div class='modal' id='Reopen"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Reopen "+data[i].Project_Name+" ?</h5>							<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6><div class='row'><a href='javascript:;' class='btn blue' style='text-transform: unset'>Reopen</a><a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Reopen Project Modal --><!-- Delete PRoject Modal --><div class='modal' id='MoveToTrash"+data[i]._id+"'><div class='modal-content'><div class='container'><h5>Move '"+data[i].Project_Name+"' to Trash?</h5><hr><h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6><hr><div class='row'><a href='javascript:;' class='btn red' style='text-transform: unset'>Move to Trash</a><a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Delete Project Modal --></tr>");
+						$('#CompletedProjects').append("<tr><td class='center'>"+data[i].Project_Name+"</td><td class='center'>"+data[i].Client_Company+"</td><td class='center'>Jan 29,2018</td><td class='center'><a href='#Reopen' class='btn blue reopen' data-target='Reopen' value='"+data[i]._id+"' style='text-transform:unset'>Reopen</a>&nbsp;<a href='#MoveToTrash' class='btn red delete' value='"+data[i]._id+"'><i class='material-icons'>delete</i></a></td></tr>");
+						$('.modal').modal();
 						$('.dropdown-button').dropdown({
 							inDuration: 300,
 							outDuration: 225,
@@ -81,11 +84,87 @@
 							alignment: 'left', 
 							stopPropagation: false 
 						});
-						$('.modal').modal();
 						i++;
+						
+					});
+				}
+			});
+			//Reopen Modal Data
+			$(function () {
+				$(".btn.blue.reopen").click(function() {
+					var ProjectsIdVal= $(this).attr('value');
+					
+					
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
+						type:'GET',
+						async:true,
+						success:function(data){
+							$('#Reopen').modal('open');
+							$('#Reopen_Project_Name').text(data.Project_Name);
+							$('#Reopen_Projects').attr('value',data._id);
+						}
+						
 					});
 					
-				}
+				});	
+			});
+			//Delete Modal Data
+			$(function () {
+				$(".btn.red.delete").click(function() {
+					var ProjectsIdVal= $(this).attr('value');
+					
+					
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
+						type:'GET',
+						async:true,
+						success:function(data){
+							$('#MoveToTrash').modal('open');
+							$('#Delete_Project_Name').text(data.Project_Name);
+							$('#Delete_Project').attr('value',data._id);
+						}
+						
+					});
+					
+				});	
+			});
+			//Reopen
+			$(function () {
+				$("#Reopen_Projects").click(function() {
+					var ProjectsIdVal= $(this).attr('value');
+					
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
+						type:'PUT',
+						async:true,
+						data:{
+							"Label":"ONGOING"
+						},
+						success:function(data){
+							document.location = "Projects.html";
+						}
+						
+					});
+					
+				});	
+			});
+			//Delete
+			$(function () {
+				$("#Delete_Project").click(function() {
+					var ProjectsIdVal= $(this).attr('value');
+					
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
+						type:'DELETE',
+						async:true,
+						success:function(data){
+							Materialize.toast(data.message, 4000,'',function(){document.location = "Projects.html"});
+						}
+						
+					});
+					
+				});	
 			});
 		});
 	</script>
@@ -142,74 +221,60 @@
 	<main>
 		
 		<!--Isi Nya Disini!-->
-		<div class="container">
-			<div class="row">
-				<a href="Projects.html" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Projects</a>
-			</div>
-			
-			<span class="flow-text">Completed Projects</span>
-			<hr>
-			<table class="striped">
-				<thead>
-					<tr>
-						<th>Name Of The Project</th>
-						<th>Client</th>
-						<th>Date Of Completion</th>
-						<th>More</th>
-					</tr>
-				</thead>
-				<tbody id="CompletedProjects">
-					<tr>
-						<td>Hello World</td>
-						<td>Alfamart</td>
-						<td>Jan 29,2018</td>
-						<td>
-							<a href="#!" data-activates="moreHelloWorld" class="btn-flat dropdown-button"><i class="material-icons">more_horiz</i></a>
-						</td>
-						<ul class="dropdown-content" id="moreHelloWorld" style="width:fit-content">
-							<li><a href="#Reopen" class="modal-trigger">Reopen</a></li>
-							<li class="divider"></li>
-							<li><a href="#!">Star</a></li>
-							<li class="divider"></li>
-							<li><a href="#MoveToTrash" class="modal-trigger">Move To Trash</a></li>
-						</ul>
-						<!-- Reopen PRoject Modal -->
-						<div class="modal" id="Reopen">
-							<div class="modal-content">
-								<div class="container">
-									<h5>Reopen "Projects 1"?</h5>							
-									<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6>
-									<div class="row">
-										<a href="#!" class="btn blue" style="text-transform: unset">Reopen</a>
-										<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
-									</div>
-								</div>
-								
-							</div>
-						</div>
-						<!-- Reopen Project Modal -->
-						<!-- Delete PRoject Modal -->
-						<div class="modal" id="MoveToTrash">
-							<div class="modal-content">
-								<div class="container">
-									<h5>Move "Hello World" to Trash?</h5>
-									<hr>									
-									<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
-									<hr>
-									<div class="row">
-										<a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
-										<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
-									</div>
-								</div>
-								
-							</div>
-						</div>
-						<!-- Delete Project Modal -->
-					</tr>
-				</tbody>
-			</table>
+		
+		<div class="row">
+			<a href="Projects.html" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Projects</a>
 		</div>
 		
+		<span class="flow-text">Completed Projects</span>
+		<hr>
+		<table class="striped">
+			<thead>
+				<tr>
+					<th class="center">Name Of The Project</th>
+					<th class="center">Client</th>
+					<th class="center">Date Of Completion</th>
+					<th class="center">More</th>
+				</tr>
+			</thead>
+			<tbody id="CompletedProjects">
+				
+			</tbody>
+		</table>
+		
+		
+		<!-- Reopen PRoject Modal -->
+		<div class="modal" id="Reopen">
+			<div class="modal-content">
+				<div class="container">
+					<h5>Reopen "<span id="Reopen_Project_Name"></span>"?</h5>							
+					<h6>This will move the project to the active projects list. It will also reopen all the tasks that were open before the project was completed.</h6>
+					<div class="row">
+						<a href="javascript:;" class="btn blue" style="text-transform: unset" id="Reopen_Projects">Reopen</a>
+						<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<!-- Reopen Project Modal -->
+		<!-- Delete PRoject Modal -->
+		<div class="modal" id="MoveToTrash">
+			<div class="modal-content">
+				<div class="container">
+					<h5>Move "<span id="Delete_Project_Name"></span>" to Trash?</h5>
+					<hr>									
+					<h6>The project and everything inside it (tasks, discussions, uploaded files, tracked time, expenses, etc.) will be moved to Trash. The project will stay there for 30 days. To remove it permanently now, empty the Trash.</h6>
+					<hr>
+					<div class="row">
+						<a href="#!" class="btn red" style="text-transform: unset" id="Delete_Project">Move to Trash</a>
+						<a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<!-- Delete Project Modal -->
 	</main>
 	<footer>
 		<!--Puter Kalo Emg Make Puter!-->

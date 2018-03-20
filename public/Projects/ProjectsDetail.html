@@ -54,6 +54,14 @@
                 alignment: 'left', 
                 stopPropagation: false 
             });
+            $('.datepicker').pickadate({
+                selectMonths: true, 
+                selectYears: 15, 
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: true 
+            });
             $('ul.tabs').tabs();
             $('.modal').modal();
             $("#Subscribers").hide();
@@ -99,10 +107,13 @@
                 return vars;
             }
             var projectsId = getUrlVars()['projectsId'];
-            //console.log(param);
+            
+            //Set Projects Id On Button
             $('#NewNote').attr('href','NewNote.html?projectsId='+projectsId);
             $('#EditProject').attr('href','EditProject.html?projectsId='+projectsId);
             $('#NewDisc').attr('href','NewDiscussion.html?projectsId='+projectsId);
+            $('#AddTask').attr('href','AddTask.html?projectsId='+projectsId);
+            $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId);
             
             //GET PROJECT DATA
             $.ajax({
@@ -127,7 +138,7 @@
                 success:function(data){
                     var i = 0;
                     $.each(data,function(key,val){
-                        $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+data[i]._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='overflow:auto'><span class='card-title'><b>"+data[i].Note_Title+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+data[i].Content.substring(0,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
+                        $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+data[i]._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='word-wrap: break-word'><span class='card-title'><b>"+checkStringLength(data[i].Note_Title,60)+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+checkStringLength(data[i].Content,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
                         i++;
                     });
                     
@@ -222,14 +233,17 @@
                     return './icons/exe.png';
                 }
             }
-            function checkStringLength(string){
-                if(string.length > 12){
-                    return string.substring(0,12)+'...';
+            function checkStringLength(text,length){
+                if (text == null) {
+                    return "";
                 }
-                else{
-                    return string;
+                if (text.length <= length) {
+                    return text;
                 }
+                text = text.substring(0, length);
+                return text + "...";
             }
+            
             
             //GET FILES BY PROJECT
             $.ajax({
@@ -251,7 +265,7 @@
                             stopPropagation: false 
                         });
                         $('.modal').modal();
-                        $('#FilesCard').append("<div class='col s12 m6 l3'><div class='card'><div class='card-image'><img src='"+isImage(data[key].File_Name)+"' class='panjul'><a class='btn-floating halfway-fab waves-effect waves-light red dropdown-button' data-activates='download"+data[key]._id+"'><i class='material-icons'>more_horiz</i></a><ul id='download"+data[key]._id+"' class='dropdown-content'><li><a href='../ProjectUploads/"+projectsId+"/"+data[key].File_Name+"' download='"+data[key].File_Name+"'>Download</a></li><li><a href='javascript:;'>Hidden From Clients</a></li><li class='divider'></li><li><a href='#MoveToTrashFiles"+data[key]._id+"' class='modal-trigger'>Move to Trash</a></li></ul><!-- Move To Trash Files Modal --><div class='modal' id='MoveToTrashFiles"+data[key]._id+"'><div class='modal-content'><div class='container'><h5>Move '"+data[key].File_Name+"' to Trash?</h5><h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6><div class='row'><a href='javascript:;' class='btn red fordel' style='text-transform: unset' value='"+data[key]._id+"'>Move to Trash</a>&nbsp;<a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Move To Trash Files Modal --></div><div class='card-content'><h5>"+checkStringLength(data[key].File_Name)+"</h5><span>by iqbalafrianto on <span>"+data[key].Date_Display+"</span></span></div></div></div>");
+                        $('#FilesCard').append("<div class='col s12 m6 l3'><div class='card'><div class='card-image'><img src='"+isImage(data[key].File_Name)+"' class='panjul'><a class='btn-floating halfway-fab waves-effect waves-light red dropdown-button' data-activates='download"+data[key]._id+"'><i class='material-icons'>more_horiz</i></a><ul id='download"+data[key]._id+"' class='dropdown-content'><li><a href='../ProjectUploads/"+projectsId+"/"+data[key].File_Name+"' download='"+data[key].File_Name+"'>Download</a></li><li><a href='javascript:;'>Hidden From Clients</a></li><li class='divider'></li><li><a href='#MoveToTrashFiles"+data[key]._id+"' class='modal-trigger'>Move to Trash</a></li></ul><!-- Move To Trash Files Modal --><div class='modal' id='MoveToTrashFiles"+data[key]._id+"'><div class='modal-content'><div class='container'><h5>Move '"+data[key].File_Name+"' to Trash?</h5><h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6><div class='row'><a href='javascript:;' class='btn red fordel' style='text-transform: unset' value='"+data[key]._id+"'>Move to Trash</a>&nbsp;<a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Move To Trash Files Modal --></div><div class='card-content'><h5>"+checkStringLength(data[key].File_Name,12)+"</h5><span>by iqbalafrianto on <span>"+data[key].Date_Display+"</span></span></div></div></div>");
                         $('.dropdown-button').dropdown({
                             inDuration: 300,
                             outDuration: 225,
@@ -288,6 +302,19 @@
                     }); 
                 });	
             });
+            /*Complete Task
+            $('.filled-in').change(function(){
+                //alert('ok');
+                $('.task').hide();
+            });
+            */
+            $('.btn.btn-flat').hide();
+            $('.task').on('mouseenter', function () {
+                $(this).find(".btn.btn-flat").show();
+            }).on('mouseleave', function () {
+                $(this).find(".btn.btn-flat").hide();
+            });
+            
             
         });
     </script>
@@ -303,32 +330,32 @@
             <a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
         </li>
         <li>
-            <a href="#!">My Work<i class="material-icons left small">computer</i></a>
+            <a href="javascript:;">My Work<i class="material-icons left small">computer</i></a>
         </li>
         <li>
-            <a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+            <a href="javascript:;">Activity<i class="material-icons left small">hourglass_full</i></a>
         </li>
         <li>
-            <a href="#!">Calendar<i class="material-icons left small">today</i></a>
+            <a href="javascript:;">Calendar<i class="material-icons left small">today</i></a>
         </li>
         <li>
-            <a href="#!">People<i class="material-icons left small">group</i></a>
+            <a href="javascript:;">People<i class="material-icons left small">group</i></a>
         </li>
         <li>
             <a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
         </li>
         <li>
-            <a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+            <a href="javascript:;">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
         </li>
         <li><div class="divider red accent-1"></div></li>
         <li>
-            <a href="#!">Reports<i class="material-icons left small">report</i></a>
+            <a href="javascript:;">Reports<i class="material-icons left small">report</i></a>
         </li>
         <li>
-            <a href="#!">Trash<i class="material-icons left small">delete</i></a>
+            <a href="javascript:;">Trash<i class="material-icons left small">delete</i></a>
         </li>
         <li>
-            <a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+            <a href="javascript:;">Add ons<i class="material-icons left small">settings_input_composite</i></a>
         </li>
         <li>
             <a href="#!">Settings<i class="material-icons left small">settings</i></a>
@@ -345,7 +372,7 @@
     </header>
     <main>
         <!--Isi Nya Disini!-->
-        <fieldset disabled="disabled" style="background-color: #ebf5ff;">
+        <fieldset disabled="disabled">
             <div class="row">
                 <div class="col s12 m6 l6">
                     <h5><span id="Project_Name"></span></h5>
@@ -447,16 +474,73 @@
                     <li class="tab col s3"><a href="#Activity" style="text-transform:unset">Activity</a></li>
                 </ul>
             </div>
+            <!--Tasks Section-->
             <div id="Tasks" class="col s12">
                 <div class="row">
                     <div class="col s12 m8 l8">
-                        <p>hello</p>
+                        <a class="btn red lighten-1" style="margin-top:10px" id="AddTask"><i class="material-icons left">add</i>Add a task</a>
+                        
+                        <div>
+                            <p><b>Inbox</b></p>
+                            <!--TASKS-->
+                            <p id="checkboxarea" class="task">
+                                <input type="checkbox" class="filled-in" id="filled-in-box"/>
+                                <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDTask"><i class="material-icons" >more_horiz</i></a>
+                            </p>
+                            <ul id="DDTask" class="dropdown-content">
+                                <li><a id="EditTask">Edit</a></li>
+                                <li><a href="#MoveToTrashTask" class="modal-trigger">Move To Trash</a></li>
+                            </ul>
+                            <!-- Move To Trash Task Modal -->
+                            <div class="modal" id="MoveToTrashTask">
+                                <div class="modal-content">
+                                    <div class="container">
+                                        <h5>Move "Task" to Trash?</h5>
+                                        
+                                        <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                        
+                                        <div class="row">
+                                            <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                            <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Move To Trash Task Modal -->
+                        </div>
                     </div>
+                    
                     <div class="col s12 m4 l4">
-                        <p>hello</p>
+                        <p><b>Task List</b></p>
+                        <p>Inbox (<span>6</span>)</p>
+                        <div class="divider"></div>
+                        
+                        <p><b>Assigness</b></p>
+                        <p>Unassigned (<span>4</span>)</p>
+                        <div class="divider"></div>
+                        
+                        <p><b>Due Date</b></p>
+                        <p>Not Set (<span>4</span>)</p>
+                        <p class="red-text">Over Due (<span>4</span>)</p>
+                        <div class="divider"></div>
+                        
+                        <p><b>Labels</b></p>
+                        <p>Not Set (<span>4</span>)</p>
+                        <p>IN PROGRESS (<span>4</span>)</p>
+                        <div class="divider"></div>
+                        
+                        <p><b>Project Progress</b></p>
+                        <p>Completed 5 of 11 tasks</p>
+                        <p>6 still open</p>
+                        <div class="progress">
+                            <div class="determinate" style="width: 50%"></div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
+            <!--Discussion Section-->
             <div id="Discussions" class="col s12">
                 <br>
                 <a id="NewDisc"  class="btn red lighten-1 waves-effect waves-light"><i class="material-icons left">add</i>New Discussion</a>
@@ -495,42 +579,7 @@
                 </div>
                 <!--FILE CARDS-->
                 <div id="FilesCard" class="row">
-                    <div class="col s12 m6 l3">
-                        <div class="card">
-                            <div class="card-image">
-                                <img src="../ProjectUploads/5a82aa152bdadf218c5143ca/xmen.jpg">
-                                
-                                <a class="btn-floating halfway-fab waves-effect waves-light red dropdown-button" data-activates="download"><i class="material-icons">more_horiz</i></a>
-                                <ul id="download" class="dropdown-content">
-                                    <li><a href="sample.png" download="sample.png">Download</a></li>
-                                    <li><a href="#!">Hidden From Clients</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#MoveToTrashFiles" class="modal-trigger">Move to Trash</a></li>
-                                </ul>
-                                <!-- Move To Trash Files Modal -->
-                                <div class="modal" id="MoveToTrashFiles">
-                                    <div class="modal-content">
-                                        <div class="container">
-                                            <h5>Move "sample.png" to Trash?</h5>
-                                            
-                                            <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
-                                            
-                                            <div class="row">
-                                                <a href="#!" class="btn red" style="text-transform: unset">Move to Trash</a>
-                                                <a href="#!" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Move To Trash Files Modal -->
-                            </div>
-                            <div class="card-content">
-                                <h5>Sample.png</h5>
-                                <span>by iqbalafrianto on <span>Jan 31 , 2018</span></span>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             <!-- Notes Section!-->
@@ -557,16 +606,16 @@
             </div>
             <div id="Time" class="col s12">   
                 
-                    <p>time</p>
-         
+                <p>time</p>
+                
             </div>
             <div id="Expenses" class="col s12">   
                 
-                    <p>Expense</p>
+                <p>Expense</p>
             </div>
             <div id="Activity" class="col s12">   
                 <p>Activity</p>
-        </div>
+            </div>
         </div>
     </main>
     <footer>
