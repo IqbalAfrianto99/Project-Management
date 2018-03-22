@@ -63,7 +63,22 @@ var Tasks = new Schema({
     },
     Due_Date:{
         type:String
-    }
+    },
+    Status:{
+        type:[{
+            type:String,
+            enum:['Active','Trash','Complete']
+        }],
+        default:['Active']
+    },
+    Comments:[{
+        person:{type:String},
+        message:{type:String}
+    }],
+    Subtask: [{
+        Subtask_Name :{type:String},
+        Assignee:{type:String}
+    }]  
 });
 var Files = new Schema({
     Projects:{

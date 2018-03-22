@@ -200,7 +200,8 @@
                                 },
                                 dataType : 'json',
                                 success:function(data){
-                                    var id = data;
+                                    var id = data._id;
+                                    alert('new Disc id: ' + id);
                                     for(i=0;i<length;i++)
                                     { 
                                         $.ajax({
@@ -222,7 +223,7 @@
                             Materialize.toast('Discussion Copied Successfully', 4000);   
                         }
                         else{
-                            
+                            //MOVE Discussion
                             //Make New Discussion
                             $.ajax({
                                 url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions',
@@ -234,7 +235,7 @@
                                 },
                                 dataType : 'json',
                                 success:function(data){
-                                    var id = data;
+                                    var id = data[0]._id;
                                     for(i=0;i<length;i++)
                                     { 
                                         $.ajax({
@@ -290,7 +291,7 @@
             });
             
             $(function () {
-				$('#AddComment').on('click', function () {
+				$('#AddCommentbtn').on('click', function () {
 					$.ajax({
 						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId+'/comment',
 						type:'POST',
@@ -393,7 +394,7 @@
                         </div>        
                         <div id="AddComment">
                             <div class="col s12" style="margin-bottom:10px">
-                                <a id="AddComment" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
+                                <a id="AddCommentbtn" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
                                 <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
                             </div>
                         </div>

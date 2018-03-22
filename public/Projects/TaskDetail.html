@@ -97,10 +97,99 @@
                 return vars;
             }
             var projectsId = getUrlVars()['projectsId'];
+            var taskId = getUrlVars()['taskId'];
             
             $('#TaskBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId+'&taskId='+taskId);
             
-            
+            //GET Task Data
+            $.ajax({
+                url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+                type:'GET',
+                async:false,
+                success:function(data){
+                    $('#Project_Name').text(data[0].Projects.Project_Name+' '),
+                    $('#Task_Name_Header').text(data[0].Task_Name+' '),
+                    $('#Task_Name_Main').text(data[0].Task_Name),
+                    $('#Task_Name_Modal').text(data[0].Task_Name),
+                    $('#DeleteTask').attr('value',data[0]._id);
+                    $('#Description').text(data[0].Description),
+                    $('#Assignee').val(data[0].Assignee),
+                    $('#Label').val(data[0].Label),
+                    $('#Due_On').val(data[0].Due_Date);
+                    //GET Comments 
+                    var i;
+                    var Comments=data[0].Comments.length;
+                    for(i=0;i <= Comments;i++){
+                        var message = data[0].Comments[i].message;
+                        var person = data[0].Comments[i].person;
+                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
+                    }
+                }
+                
+            });	
+            //Delete
+			$(function () {
+				$("#DeleteTask").click(function() {
+					var TasksIdVal= $(this).attr('value');
+                    
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
+						type:'PUT',
+                        async:false,
+                        headers:{
+                            "header":"Trash"
+                        },
+                        dataType : 'json',
+						success:function(data){
+                            document.location='ProjectsDetail.html?projectsId='+projectsId;  
+						}
+						
+					});
+					
+				});	
+            });
+            //Complete Task
+            $('#CompleteTask').change(function(){
+                
+                $.ajax({
+                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+                    type:'PUT',
+                    async:false,
+                    headers:{
+                        "header":"Complete"
+                    },
+                    dataType : 'json',
+                    success:function(data){
+                        Materialize.toast($('#Task_Name_Main').text()+' Completed', 2000);
+                    }
+                    
+                });
+                
+            });
+            //Add Comment
+            $(function () {
+				$('#AddCommentbtn').on('click', function () {
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/comment',
+						type:'POST',
+						async:true,
+                        data:{
+                            "person":'Iqbalafrianto99',
+                            "message":$('#Message').val()
+                        },
+						dataType : 'json',
+						success:function(data){
+                            var comments = data.Comments.length;
+                            var lascomments = data.Comments[comments - 1];
+                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
+                        }
+                    });  
+                    $('#Message').val(''); 
+                    Materialize.toast('Your Comment Has Been Successfully Added', 2000); 
+				});
+            });    
+            //Subtask//
             $('#SubTask').hide();
             $('#EditSubTask').hide();
             
@@ -123,6 +212,7 @@
                 $('#SubTask').hide();
                 $('#AddSubTaskForm').show();
             });
+            //Subtask//
             
             $('#AddComment').hide();
             
@@ -204,8 +294,8 @@
         <div class="row">
             <div class="col s12 m8 l9">
                 <p class="grey-text">
-                    <span>Project_Name.</span><span>Task Name</span>Created by <span>uploader </span>on <span>Date</span>
-                    <a class="btn btn-flat" style="text-transform:unset">Edit Task</a>
+                    <span id="Project_Name"></span><span id="Task_Name_Header"></span> Created by <span>uploader </span>on <span>Date</span>
+                    <a id="EditTask" class="btn btn-flat" style="text-transform:unset">Edit Task</a>
                     <a href="#MoveToTrashTask" class="btn btn-flat modal-trigger" style="text-transform:unset"><i class="material-icons">delete</i></a>
                     <a class="btn btn-flat dropdown-button" data-activates="TaskMore" style="text-transform:unset"><i class="material-icons">more_horiz</i></a>
                     <ul id="TaskMore" class="dropdown-content">
@@ -219,9 +309,9 @@
                 
                 <div class="row">
                     <div class="col s12">
-                        <input type="checkbox" class="filled-in" id="TaskName"/>
-                        <label for="TaskName" class="black-text"><h5><b>Task Name</b></h5></label>
-                        <p>Description</p>
+                        <input type="checkbox" class="filled-in" id="CompleteTask"/>
+                        <label for="CompleteTask" class="black-text"><h5><b id="Task_Name_Main"></b></h5></label>
+                        <p id="Description">Description</p>
                         <div class="divider"></div>
                     </div>
                     <div class="col s12">
@@ -255,12 +345,12 @@
                         <div class="modal" id="MoveToTrashTask">
                             <div class="modal-content">
                                 <div class="container">
-                                    <h5>Move "Task" to Trash?</h5>
+                                    <h5>Move "<span id="Task_Name_Modal"></span>" to Trash?</h5>
                                     
                                     <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
                                     
                                     <div class="row">
-                                        <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a id="DeleteTask" href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
                                         <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
                                     </div>
                                     
@@ -311,12 +401,12 @@
                             </div>        
                             <div id="AddComment">
                                 <div class="col s12" style="margin-bottom:10px">
-                                    <a id="AddComment" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
+                                    <a id="AddCommentbtn" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
                                     <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
                                 </div>
                             </div>
                             <div id="comment">
-                                <div class='col s12 section'><h6><b>Person </b><span>8 days ago</span></h6><p>Message</p></div>
+                                
                             </div>
                             
                         </div>
@@ -331,19 +421,26 @@
                     <option value="">Inbox</option>
                 </select>
                 <p><b>Assignee</b></p>
-                <select class="browser-default">
-                    <option value="">iqbalafrianto99</option>
-                    <option value="">nur.rizki</option>
-                    <option value="">hendysantoso911</option>
+                <select id="Assignee" class="browser-default">
+                    <option value="" selected disabled>Assignee</option>
+                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                    <option value="nur.rizki">nur.rizki</option>
+                    <option value="hendysantoso911">hendysantoso911</option>
+                </select>
+                <p><b>Label</b></p>
+                <select id="Label" class="browser-default">
+                    <option value="" selected disabled>Label</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="New">New</option>
                 </select>
                 <p><b>Due On</b></p>
-                <input type="text" class="datepicker">
+                <input id="Due_On" type="text" class="datepicker">
                 <p><b>Time Estimation</b></p>
                 <a href="#">Set...</a><br>
                 <input type="checkbox" class="filled-in" id="HiddenClientsTask">
                 <label for="HiddenClientsTask">Hidden From Clients</label>
-                <input type="checkbox" class="filled-in" id="HiddenPriority">
-                <label for="HiddenPriority">Hidden From Clients</label>
+                <input type="checkbox" class="filled-in" id="HighPriority">
+                <label for="HighPriority">High Priority</label>
                 <p>
                     <b>Subscribers</b>
                     <span style="float:right">

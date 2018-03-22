@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>New Discussion</title>
+	<title>New Task</title>
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
 	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
@@ -37,7 +37,14 @@
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
             $('.dropdown-button').dropdown();
-            
+            $('.datepicker').pickadate({
+                selectMonths: true, 
+                selectYears: 15, 
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: true 
+            });
             $("#Subscribers").hide();
             $('#Choose').on("click",function(){
                 $("#Subscribers").toggle();
@@ -78,7 +85,29 @@
                 return vars;
             }
             var projectsId = getUrlVars()['projectsId'];
-            
+            //Create Task
+            $(function () {
+				$("#AddTask").click(function() {
+                    $.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks',
+						type:'POST',
+                        async:false,
+                        data:{
+                            "Task_Name":$('#Task_Name').val(),
+                            "Description":$('#Description').val(),
+                            "Assignee":$('#Assignee').val(),
+                            "Label":$('#Label').val(),
+                            "Due_Date":$('#Due_On').val()
+                        },
+                        dataType : 'json',
+						success:function(data){
+                            Materialize.toast('New Task Added', 4000,'',function(){document.location = 'ProjectsDetail.html?projectsId='+projectsId});
+
+                        }
+						
+					});		
+				});	
+			});
             $('#TaskBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
         });
     </script>
@@ -142,8 +171,11 @@
             <a id="TaskBack" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Task</a>                 
             <div class="row">
                 <div class="col s12 m6">
-                    <input type="text" placeholder="Task Name">
-                    <input type="text" placeholder="Task Description">
+                    <input id="Task_Name" type="text" placeholder="Task Name">
+                    <div class="input-field">
+                        <textarea id="Description" class="materialize-textarea"></textarea>
+                        <label for="Description">Task Description</label>
+                    </div>
                     <p>
                         <b>Subscribers</b>
                         <span style="float:right">
@@ -183,7 +215,7 @@
                             <label for="HiddenFromClients">Hidden From Clients</label>
                         </div>
                     </p>
-                    <a href="javascript:;" class="btn blue" style="text-transform:unset">Add Task</a>&nbsp;<a href="javascript:;" class="btn white black-text" style="text-transform:unset">Cancel</a>
+                    <a id="AddTask" href="javascript:;" class="btn blue" style="text-transform:unset">Add Task</a>&nbsp;<a href="javascript:;" class="btn white black-text" style="text-transform:unset">Cancel</a>
                 </div>
                 <div class="col s12 m6">
                     <h6><b>Task List</b></h6>
@@ -191,13 +223,20 @@
                         <option value="">Inbox</option>
                     </select>
                     <p><b>Assignee</b></p>
-                    <select class="browser-default">
-                        <option value="">iqbalafrianto99</option>
-                        <option value="">nur.rizki</option>
-                        <option value="">hendysantoso911</option>
+                    <select id="Assignee" class="browser-default">
+                        <option value="" selected disabled>Assignee</option>
+                        <option value="iqbalafrianto99">iqbalafrianto99</option>
+                        <option value="nur.rizki">nur.rizki</option>
+                        <option value="hendysantoso911">hendysantoso911</option>
+                    </select>
+                    <p><b>Label</b></p>
+                    <select id="Label" class="browser-default">
+                        <option value="" selected disabled>Label</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="New">New</option>
                     </select>
                     <p><b>Due On</b></p>
-                    <input type="text" class="datepicker">
+                    <input id="Due_On" type="text" class="datepicker">
                     <p><b>Time Estimation</b></p>
                     <a href="#">Set...</a><br>
                     <input type="checkbox" class="filled-in" id="HiddenClientsTask">

@@ -302,12 +302,109 @@
                     }); 
                 });	
             });
-            /*Complete Task
-            $('.filled-in').change(function(){
-                //alert('ok');
-                $('.task').hide();
+            function isEmpty(string){
+                if(!string){
+                    return "";
+                }
+                else{
+                    return string;
+                }
+                
+            }
+            function isEmptyAssignee(string){
+                if(!string){
+                    return "not set";
+                }
+                else{
+                    return string;
+                }
+                
+            }
+            //GET Task BY PROJECT
+            $.ajax({
+                url:'http://localhost:3000/projects/'+projectsId+'/Tasks',
+                type:'GET',
+                async:false,
+                contentType:'application/json',
+                success:function(data){
+                    var i = 0;
+                    $.each(data,function(key,val){
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+                        $('#ListOfTask').append('<p id="checkboxarea'+data[i]._id+'" class="task"><input type="checkbox" class="filled-in complete-task" id="filled-in-box'+data[i]._id+'" value="'+data[i]._id+'"/><label for="filled-in-box'+data[i]._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">'+isEmptyAssignee(data[i].Assignee)+'</span> <span><a id="TN'+data[i]._id+'" href="TaskDetail.html?projectsId='+projectsId+'&taskId='+data[i]._id+'"  class="black-text">'+isEmpty(data[i].Task_Name)+'</a></span><span>-'+isEmpty(data[i].Due_Date)+'</span>.<span class="green-text">'+isEmpty(data[i].Label)+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDTask'+data[i]._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDTask'+data[i]._id+'" class="dropdown-content"><li><a id="EditTask" href="EditTask.html?projectsId='+projectsId+'&taskId='+data[i]._id+'">Edit</a></li><li><a class="delete-task" value="'+data[i]._id+'">Move To Trash</a></li></ul>');
+                        i++;
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+                    });
+                    
+                } 
             });
-            */
+            //Delete Modal Data
+			$(function () {
+				$(".delete-task").click(function() {
+					var TasksIdVal= $(this).attr('value');
+                    $('#Delete_Task_Name').text($('#TN'+TasksIdVal).text());
+                    $('#Delete_Task').attr('value',TasksIdVal);
+                    $('#MoveToTrashTask').modal('open');
+				});	
+            });
+            //Delete
+			$(function () {
+				$("#Delete_Task").click(function() {
+					var TasksIdVal= $(this).attr('value');
+
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
+						type:'PUT',
+                        async:false,
+                        headers:{
+                            "header":"Trash"
+                        },
+                        dataType : 'json',
+						success:function(data){
+                            $('#MoveToTrashTask').modal('close');
+                            $('#checkboxarea'+TasksIdVal).hide();
+							Materialize.toast($('#TN'+TasksIdVal).text()+'Deleted', 4000);
+						}
+						
+					});
+					
+				});	
+			});
+            $('.filled-in.complete-task').change(function(){
+                var TasksIdVal= $(this).attr('value');
+                $.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
+						type:'PUT',
+                        async:false,
+                        headers:{
+                            "header":"Complete"
+                        },
+                        dataType : 'json',
+						success:function(data){
+                            $('#checkboxarea'+TasksIdVal).hide();
+							Materialize.toast($('#TN'+TasksIdVal).text()+' Completed', 4000);
+						}
+						
+					});
+            });
+           
             $('.btn.btn-flat').hide();
             $('.task').on('mouseenter', function () {
                 $(this).find(".btn.btn-flat").show();
@@ -480,7 +577,7 @@
                     <div class="col s12 m8 l8">
                         <a class="btn red lighten-1" style="margin-top:10px" id="AddTask"><i class="material-icons left">add</i>Add a task</a>
                         
-                        <div>
+                        <div id="ListOfTask">
                             <p><b>Inbox</b></p>
                             <!--TASKS-->
                             <p id="checkboxarea" class="task">
@@ -495,12 +592,12 @@
                             <div class="modal" id="MoveToTrashTask">
                                 <div class="modal-content">
                                     <div class="container">
-                                        <h5>Move "Task" to Trash?</h5>
+                                        <h5>Move "<span id="Delete_Task_Name"></span>" to Trash?</h5>
                                         
                                         <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
                                         
                                         <div class="row">
-                                            <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                            <a id="Delete_Task" href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
                                             <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
                                         </div>
                                         

@@ -71,9 +71,9 @@
 							alignment: 'left', 
 							stopPropagation: false 
 						});
-						$('.modal').modal();
+						
 						$('#CompletedProjects').append("<tr><td class='center'>"+data[i].Project_Name+"</td><td class='center'>"+data[i].Client_Company+"</td><td class='center'>Jan 29,2018</td><td class='center'><a href='#Reopen' class='btn blue reopen' data-target='Reopen' value='"+data[i]._id+"' style='text-transform:unset'>Reopen</a>&nbsp;<a href='#MoveToTrash' class='btn red delete' value='"+data[i]._id+"'><i class='material-icons'>delete</i></a></td></tr>");
-						$('.modal').modal();
+						
 						$('.dropdown-button').dropdown({
 							inDuration: 300,
 							outDuration: 225,

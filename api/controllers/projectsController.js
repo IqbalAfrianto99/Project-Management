@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
 Projects = mongoose.model('projects'),
 Discussion = mongoose.model('discussions'),
 Notes = mongoose.model('notes'),
-Files = mongoose.model('files');
+Files = mongoose.model('files'),
+Tasks = mongoose.model('tasks');
 
 //Date Stuff
 var monthNames = ["January", "February", "March", "April", "May", "June",
@@ -19,10 +20,6 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 
-/*
-NOT EQUAL TO 
-{ $ne: 'Active' }
-*/
 exports.list_all_projects = function(req, res) {
     var header = req.headers['projects'];
     if(header != null && header != 'COMPLETE'){
@@ -132,18 +129,16 @@ exports.create_discussion_in_projects = function(req,res){
         });
         if(err) 
         res.send(err);
-        res.json(discussions._id);
+        res.json(discussions);
     });
 };
 exports.add_disc_comment = function(req,res){
-    console.log('adding comment');
-    console.log('person'+req.body.person);
-    console.log('message'+req.body.message);
+    
     var comment = {person:req.body.person,message:req.body.message};
     Discussion.findOneAndUpdate({ _id: req.params.discussionsId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,discussions){
         if(err) 
         res.send(err);
-        console.log('comment added');
+        
         res.json(discussions);
     });
     
@@ -211,7 +206,7 @@ exports.read_notes_by_projectsId_notesId = function(req, res){
 exports.update_a_notes = function(req,res) {
     var header = req.headers['movetotrash'];
     if(header != null){
-        Notes.findByIdAndRemove(req.params.notesId,function(err,discussions){
+        Notes.findByIdAndRemove(req.params.notesId,function(err,notes){
             if (err)
             res.send(err);
             
@@ -230,7 +225,7 @@ exports.add_note_comment = function(req,res){
     Notes.findOneAndUpdate({ _id: req.params.notesId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,notes){
         if(err) 
         res.send(err);
-        console.log('comment added');
+       
         res.json(notes);
     });   
 }
@@ -326,3 +321,115 @@ exports.move_file_to_trash = function(req,res) {
     }
     
 };
+
+
+//Tasks
+
+exports.create_task_in_projects = function(req,res){
+    var tasks = new Tasks({
+        _id: new mongoose.Types.ObjectId(),
+        Projects:req.params.projectsId,
+        Task_Name: req.body.Task_Name,
+        Description: req.body.Description,
+        Assignee: req.body.Assignee,
+        Label: req.body.Label,
+        Due_Date: req.body.Due_Date
+    });
+    
+    tasks.save(function(err,tasks){
+        Projects.findOneAndUpdate({ _id: req.params.projectsId  }, { $push: { Tasks: tasks._id }},{upsert: true,new:true}, function(err,projects){
+            if (err) return handleError(err);
+        });
+        if(err) 
+        res.send(err);
+        res.json(tasks);
+    });
+};
+
+exports.list_tasks_by_projectsId = function(req, res){
+    Tasks.find({Projects:req.params.projectsId,Status:'Active' }).populate('Projects','Project_Name').exec(function (err,tasks){
+        if(err)
+        res.send(err);
+        res.json(tasks);  
+    });
+};
+
+exports.read_tasks_by_projectsId = function(req, res){
+    Tasks.find({_id:req.params.tasksId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,tasks){
+        if(err)
+        res.send(err);
+        res.json(tasks);  
+    }); 
+};
+
+exports.update_a_tasks = function(req,res) {
+    var header = req.headers['header'];
+    if(header != null){
+        Tasks.findByIdAndUpdate(req.params.tasksId, { $set: { Status: header }}, {new: true}, function(err, tasks) {
+            if (err)
+            res.send(err);
+            res.json(tasks);
+        });
+    }
+    else{    
+        Tasks.findOneAndUpdate({_id: req.params.tasksId}, req.body, {new: true}, function(err, tasks) {
+            if (err)
+            res.send(err);
+            res.json(tasks);
+        });
+    }
+};
+
+exports.add_task_comment = function(req,res){
+    var comment = {person:req.body.person,message:req.body.message};
+    Tasks.findOneAndUpdate({ _id: req.params.tasksId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,tasks){
+        if(err) 
+        res.send(err);
+        
+        res.json(tasks);
+    });   
+}
+
+exports.add_subtask = function(req,res){
+    var subtask = {Subtask_Name:req.body.Subtask_Name,Assignee:req.body.Assignee};
+    Tasks.findOneAndUpdate({ _id: req.params.tasksId  }, { $push: { Subtask: subtask }},{upsert: true,new:true}, function(err,tasks){
+        if(err) 
+        res.send(err);
+        console.log('subtask added');
+        res.json(tasks);
+    });   
+}
+
+exports.remove_subtask = function(req,res){
+    Tasks.findOneAndUpdate({ _id: req.params.tasksId  }, {$pull: {Subtask: {_id: req.params.subtaskId}}},{upsert: true,new:true}, function(err,tasks){
+        if(err) 
+        res.send(err);
+        res.json(tasks);
+    });  
+}
+
+exports.edit_subtask = function(req,res){
+    
+    var subtask = {Subtask_Name:req.body.Subtask_Name,Assignee:req.body.Assignee};
+   
+    Tasks.findOneAndUpdate(
+        { "_id": req.params.tasksId, "Subtask._id": req.params.subtaskId },
+        { 
+            "$set": {
+                "Subtask.$": subtask
+            }
+        },
+        function(err,tasks) {
+            if(err) 
+            res.send(err);
+            
+        }
+    ); 
+    
+    Tasks.find({_id:req.params.tasksId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,tasks){
+        if(err)
+        res.send(err);
+        res.json(tasks);  
+    });
+    
+}
