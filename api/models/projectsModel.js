@@ -77,7 +77,14 @@ var Tasks = new Schema({
     }],
     Subtask: [{
         Subtask_Name :{type:String},
-        Assignee:{type:String}
+        Assignee:{type:String},
+        Status:{
+            type:[{
+                type:String,
+                enum:['Active','Trash','Complete']
+            }],
+            default:['Active']
+        },
     }]  
 });
 var Files = new Schema({

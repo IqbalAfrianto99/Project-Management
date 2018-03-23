@@ -117,14 +117,38 @@
                     $('#Assignee').val(data[0].Assignee),
                     $('#Label').val(data[0].Label),
                     $('#Due_On').val(data[0].Due_Date);
-                    //GET Comments 
-                    var i;
-                    var Comments=data[0].Comments.length;
-                    for(i=0;i <= Comments;i++){
-                        var message = data[0].Comments[i].message;
-                        var person = data[0].Comments[i].person;
-                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
-                    }
+                    
+                    //GET Subtask
+                    $.each(data[0].Subtask,function(index,val){
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+                        });
+                        if(val.Status != 'Active'){return true}
+                        $('#SubtaskList').append('<p id="Subtask'+val._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+val._id+'" value="'+val._id+'"/><label for="filled-in-box'+val._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+val._id+'">'+val.Assignee+'</span><span id="STN'+val._id+'" class="black-text"> '+val.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+val._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+val._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+val._id+'">Edit</a></li><li><a class="delete-subtask" value="'+val._id+'">Move To Trash</a></li></ul>');
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+                    });
+                    //GET Comments
+                    $.each(data[0].Comments,function(index,val){   
+                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
+                        
+                    });
+                    
                 }
                 
             });	
@@ -198,19 +222,128 @@
                 $('#SubTask').show();
             });
             
-            $('#EditSubTaskbtn').on('click',function(){
-                $('#Subtask').hide();
-                $('#EditSubTask').show();
+            //Add Subtask
+            $(function () {
+				$('#AddSubTaskbtn').on('click', function () {
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask',
+						type:'POST',
+						async:true,
+                        data:{
+                            "Subtask_Name":$('#SubTaskName').val(),
+                            "Assignee":$('#SubTaskAssignee').val()
+                        },
+						dataType : 'json',
+						success:function(data){
+                            var subtask = data.Subtask.length;
+                            var lastsubtask = data.Subtask[subtask - 1];
+                            
+                            $('#SubtaskList').append('<p id="Subtask'+lastsubtask._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+lastsubtask._id+'" value="'+lastsubtask._id+'"/><label for="filled-in-box'+lastsubtask._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+lastsubtask._id+'">'+lastsubtask.Assignee+'</span><span class="black-text" id="STN'+lastsubtask._id+'"> '+lastsubtask.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+lastsubtask._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+lastsubtask._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+lastsubtask._id+'">Edit</a></li><li><a class="delete-subtask" value="'+lastsubtask._id+'">Move To Trash</a></li></ul>'); 
+                            $('.dropdown-button').dropdown({
+                                inDuration: 300,
+                                outDuration: 225,
+                                constrainWidth: false, 
+                                hover: false, 
+                                gutter: 3, 
+                                belowOrigin: true, 
+                                alignment: 'left', 
+                                stopPropagation: false 
+                            });
+                            $('#SubTaskName').val(''); 
+                            Materialize.toast('New Subtask Added', 2000);  
+                        }
+                    });              
+				});
+            });  
+            //Complete Subtask
+            $(document).on('change', ".filled-in.complete-subtask", function() {
+                var SubTasksIdVal= $(this).attr('value');
+                $.ajax({
+                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                    type:'PUT',
+                    async:false,
+                    headers:{
+                        "header":"Complete"
+                    },
+                    dataType : 'json',
+                    success:function(data){
+                        $('#Subtask'+SubTasksIdVal).hide();
+                        Materialize.toast('Completed', 4000);
+                    }
+                    
+                });     
             });
             
+            //Delete Subtask Modal Data
+			$(function () {
+				$(".delete-subtask").click(function() {
+                    
+                    var SubTasksIdVal= $(this).attr('value');
+                    
+                    $('#Subtask_Name_Modal').text($('#STN'+SubTasksIdVal).text());
+                    $('#DeleteSubtask').attr('value',SubTasksIdVal);
+                    $('#MoveToTrashSubTask').modal('open');
+                    
+                });	
+            });
+            //Delete Subtask
+			$(function () {
+				$("#DeleteSubtask").click(function() {
+					var SubTasksIdVal= $(this).attr('value');
+                    
+					$.ajax({
+                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                        type:'DELETE',
+                        async:false,
+                        dataType : 'json',
+                        success:function(data){
+                            $('#Subtask'+SubTasksIdVal).hide();
+                            Materialize.toast('Deleted', 2000);
+                            $('#MoveToTrashSubTask').modal('close');
+                        }
+                        
+                    });
+					
+				});	
+            });
+            $(document).on('click', ".EditSubTaskbtn", function() {
+                var SubTasksIdVal= $(this).attr('value');
+                $('#SubtaskNameEdit').val($('#STN'+SubTasksIdVal).text());
+                $('#SubtaskAssigneeEdit').val($('#STA'+SubTasksIdVal).text());
+                $('#CancelEditSubTask').attr('value',SubTasksIdVal);
+                $('#handelEditSubtask').attr('value',SubTasksIdVal);
+                $('#Subtask'+SubTasksIdVal).hide();
+                $('#EditSubTask').show();
+                   
+            });
+           $(function(){
+               $('#handelEditSubtask').on('click',function(){
+                var SubTasksIdVal= $(this).attr('value');
+                $.ajax({
+                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                        type:'PUT',
+                        async:false,
+                        data:{
+                            "Subtask_Name":$('#SubtaskNameEdit').val(),
+                            "Assignee":$('#SubtaskAssigneeEdit').val()
+                        },
+                        dataType : 'json',
+                        success:function(data){
+                           document.location.reload();
+                        }
+                        
+                    });  
+               });
+           });
             $('#CancelEditSubTask').on('click',function(){
-                $('#Subtask').show();
+                var SubTasksIdVal= $(this).attr('value');
+                $('#Subtask'+SubTasksIdVal).show();
                 $('#EditSubTask').hide();
             });
             
             $('#CancelSubTask').on('click',function(){
                 $('#SubTask').hide();
-                $('#AddSubTaskForm').show();
+               $('#AddSubTaskForm').show();
             });
             //Subtask//
             
@@ -315,11 +448,14 @@
                         <div class="divider"></div>
                     </div>
                     <div class="col s12">
+                        <!--Subtask List-->
                         <h6><b>Subtasks</b></h6>
-                        <p id="Subtask" class="subtask">
-                            <input type="checkbox" class="filled-in" id="filled-in-box"/>
-                            <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask"><i class="material-icons" >more_horiz</i></a>
-                        </p>
+                        <div id="SubtaskList">
+                            <p id="Subtask" class="subtask">
+                                <input type="checkbox" class="filled-in" id="filled-in-box"/>
+                                <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask"><i class="material-icons" >more_horiz</i></a>
+                            </p>
+                        </div>
                         <ul id="DDSubTask" class="dropdown-content">
                             <li><a id="EditSubTaskbtn">Edit</a></li>
                             <li><a href="#MoveToTrashSubTask" class="modal-trigger">Move To Trash</a></li>
@@ -328,12 +464,12 @@
                         <div class="modal" id="MoveToTrashSubTask">
                             <div class="modal-content">
                                 <div class="container">
-                                    <h5>Move "Task" to Trash?</h5>
+                                    <h5>Move "<span id="Subtask_Name_Modal"></span>" to Trash?</h5>
                                     
                                     <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
                                     
                                     <div class="row">
-                                        <a href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a id="DeleteSubtask" href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
                                         <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
                                     </div>
                                     
@@ -358,38 +494,39 @@
                             </div>
                         </div>
                         <!-- Move To Trash Task Modal -->
+                        <!--Edit Subtask--> 
                         <div class="row" id="EditSubTask">
                             <div class="col s12 m10 l9">
-                                <input type="text" placeholder="Name Of The Subtask">
+                                <input id="SubtaskNameEdit" type="text" placeholder="Name Of The Subtask">
                             </div>
                             <div class="col s12 m12 l3">
-                                <select class="browser-default">
+                                <select id="SubtaskAssigneeEdit" class="browser-default">
                                     <option value="" disabled selected>Assignee</option>
-                                    <option value="">iqbalafrianto99</option>
-                                    <option value="">nur.rizki</option>
-                                    <option value="">hendysantoso911</option>
+                                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                                    <option value="nur.rizki">nur.rizki</option>
+                                    <option value="hendysantoso911">hendysantoso911</option>
                                 </select>
                             </div>
                             <div class="col s12">
-                                <a class="btn blue">Update</a>
+                                <a id="handelEditSubtask" class="btn blue">Update</a>
                                 <a class="btn white black-text" id="CancelEditSubTask">Cancel</a>
                             </div>
                         </div>
                         <a class="btn red darken-1" id="AddSubTaskForm">Add subtask</a>
                         <div class="row" id="SubTask">
                             <div class="col s12 m10 l9">
-                                <input type="text" placeholder="Name Of The Subtask">
+                                <input id="SubTaskName" type="text" placeholder="Name Of The Subtask">
                             </div>
                             <div class="col s12 m12 l3">
-                                <select class="browser-default">
+                                <select class="browser-default" id="SubTaskAssignee">
                                     <option value="" disabled selected>Assignee</option>
-                                    <option value="">iqbalafrianto99</option>
-                                    <option value="">nur.rizki</option>
-                                    <option value="">hendysantoso911</option>
+                                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                                    <option value="nur.rizki">nur.rizki</option>
+                                    <option value="hendysantoso911">hendysantoso911</option>
                                 </select>
                             </div>
                             <div class="col s12">
-                                <a class="btn blue">Add</a>
+                                <a class="btn blue" id="AddSubTaskbtn">Add</a>
                                 <a class="btn white black-text" id="CancelSubTask">Cancel</a>
                             </div>
                         </div>

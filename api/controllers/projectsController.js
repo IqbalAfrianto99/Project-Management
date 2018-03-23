@@ -411,25 +411,51 @@ exports.remove_subtask = function(req,res){
 exports.edit_subtask = function(req,res){
     
     var subtask = {Subtask_Name:req.body.Subtask_Name,Assignee:req.body.Assignee};
-   
-    Tasks.findOneAndUpdate(
-        { "_id": req.params.tasksId, "Subtask._id": req.params.subtaskId },
-        { 
-            "$set": {
-                "Subtask.$": subtask
+    var header = req.headers['header'];
+
+    if(header != null){
+        Tasks.findOneAndUpdate(
+            { "_id": req.params.tasksId, "Subtask._id": req.params.subtaskId },
+            { 
+                "$set": {
+                    "Subtask.$.Status": header
+                }
+            },
+            function(err,tasks) {
+                if(err) 
+                res.send(err);
+                
             }
-        },
-        function(err,tasks) {
-            if(err) 
+
+        );
+
+        Tasks.find({_id:req.params.tasksId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,tasks){
+            if(err)
             res.send(err);
-            
-        }
-    ); 
+            res.json(tasks);  
+        });
+    }
+    else{
+        Tasks.findOneAndUpdate(
+            { "_id": req.params.tasksId, "Subtask._id": req.params.subtaskId },
+            { 
+                "$set": {
+                    "Subtask.$": subtask
+                }
+            },
+            function(err,tasks) {
+                if(err) 
+                res.send(err);
+                
+            }
+        ); 
+        
+        Tasks.find({_id:req.params.tasksId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,tasks){
+            if(err)
+            res.send(err);
+            res.json(tasks);  
+        });
+    }
     
-    Tasks.find({_id:req.params.tasksId,Projects:req.params.projectsId}).populate('Projects','Project_Name').exec(function (err,tasks){
-        if(err)
-        res.send(err);
-        res.json(tasks);  
-    });
     
 }
