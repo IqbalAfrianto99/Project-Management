@@ -103,6 +103,15 @@
                 });   
             });   
             $('#BackNote').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            //Prevent ENTER on NOTE_TITLE
+            $("#Note_Title").keydown(function(e){
+                if (e.keyCode == 13 && !e.shiftKey)
+                {
+                    // prevent default behavior
+                    e.preventDefault();
+                    return false;
+                }
+            });
         });
     </script>
     

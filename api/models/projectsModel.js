@@ -45,6 +45,48 @@ var Notes = new Schema({
         message:{type:String}
     }] 
 });
+var Tasks = new Schema({
+    Projects:{
+        type: Schema.Types.ObjectId,ref: 'projects'
+    },
+    Task_Name:{
+        type:String
+    },
+    Description:{
+        type:String
+    },
+    Label:{
+        type:String
+    },
+    Assignee:{
+        type:String
+    },
+    Due_Date:{
+        type:String
+    },
+    Status:{
+        type:[{
+            type:String,
+            enum:['Active','Trash','Complete']
+        }],
+        default:['Active']
+    },
+    Comments:[{
+        person:{type:String},
+        message:{type:String}
+    }],
+    Subtask: [{
+        Subtask_Name :{type:String},
+        Assignee:{type:String},
+        Status:{
+            type:[{
+                type:String,
+                enum:['Active','Trash','Complete']
+            }],
+            default:['Active']
+        },
+    }]  
+});
 var Files = new Schema({
     Projects:{
         type: Schema.Types.ObjectId,ref: 'projects'
@@ -96,9 +138,17 @@ var Projects = new Schema({
         type: String
     },
     Company:[CompanySchema],
+    Status:{
+        type:[{
+            type:String,
+            enum:['Active','Trash']
+        }],
+        default:['Active']
+    },
     Discussion:[{type:Schema.Types.ObjectId, ref: 'discussion'}],
     Notes:[{type:Schema.Types.ObjectId, ref:'notes'}],
-    Files:[{type:Schema.Types.ObjectId, ref:'files'}]
+    Files:[{type:Schema.Types.ObjectId, ref:'files'}],
+    Tasks:[{type:Schema.Types.ObjectId, ref:'tasks'}]
 });
 
 
@@ -107,6 +157,7 @@ module.exports=mongoose.model('discussions',Discussion);
 module.exports=mongoose.model('projects', Projects);
 module.exports=mongoose.model('notes',Notes);
 module.exports=mongoose.model('files',Files);
+module.exports=mongoose.model('tasks',Tasks);
 
 
 

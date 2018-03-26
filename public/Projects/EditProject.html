@@ -55,7 +55,6 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$(".button-collapse").sideNav({menuWidth: 220});
-			$('select').material_select();
 			$("#tidak").hide();
 			$("#ada").click(function(){
 				$("#tidak").slideToggle(1000);
@@ -69,7 +68,7 @@
 				});
 				return vars;
 			}
-			var param= getUrlVars()['projectsId'];
+			var param = getUrlVars()['projectsId'];
 			
 			$.ajax({
 				url:'http://localhost:3000/projects/'+param,
@@ -84,13 +83,8 @@
 					$('#Category').val(data.Category);  
 					$('#Label').val(data.Label);
 					$('#Client_Company').val(data.Client_Company);
+					$('#Template').val(data.Template);
 					
-					
-					$('#Template option').each(function() {
-						if($(this).val() == data.Template) {
-							$(this).prop("selected", true);
-						}
-					});
 				}
 			});
 			
@@ -196,21 +190,27 @@
 						<div class="col s12"><hr></div>
 					</div>
 					<div class="row">
-						<div class="col s5 kanan"><label for="tmp"><b>Template</b></label></div>
+						<div class="col s5 kanan"><label for="Template"><b>Template</b></label></div>
 						<div class="col s7">
-							<select class="browser-default col s12" id="Template">
-								<option value="">Choose template...</option>
+							<select class="browser-default" id="Template">
+								<option value="" disabled>Choose template...</option>
 								<option value="Template 1">Template 1</option>
 								<option value="Template 2">Template 2</option>
 							</select>
 						</div>
 					</div>
+					<hr>				
 					<div class="row">
-						<div class="col s12"><hr></div>
-					</div>
-					<div class="row">
-						<div class="col s5 kanan"><label for="lbl"><b>Label</b></label></div>
-						<div class="col s7"><input class="browser-default col s12" name="Label" type="text" id="Label" placeholder="Label name"><br> <label for="lbl" >The label shows what stage the project is in.</label> </div>
+						<div class="col s5 kanan"><label for="Label"><b>Label</b></label></div>
+						<div class="col s7">
+							<select class="browser-default" id="Label">
+								<option value="" selected disabled>Choose Label...</option>
+								<option value="ONGOING">ONGOING</option>
+								<option value="COMPLETED">COMPLETE</option>
+							</select>
+						</div>
+					<br><br>
+					<hr>
 					</div>
 					<div class="row">
 						<div class="col s5 kanan"><label for="ctg"><b>Category</b></label></div>

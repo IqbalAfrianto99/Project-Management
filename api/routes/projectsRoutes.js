@@ -8,7 +8,6 @@ module.exports = function(app) {
   .get(projects.list_all_projects)
   .post(projects.create_a_projects);
   
-  
   app.route('/projects/:projectsId')
   .get(projects.read_a_projects)
   .put(projects.update_a_projects)
@@ -48,4 +47,24 @@ module.exports = function(app) {
   app.route('/projects/:projectsId/Files/:filesId')
   .put(projects.move_file_to_trash);
   
+  //tasks Routes
+  app.route('/projects/:projectsId/Tasks')
+  .get(projects.list_tasks_by_projectsId)
+  .post(projects.create_task_in_projects);
+
+  app.route('/projects/:projectsId/Tasks/:tasksId')
+  .get(projects.read_tasks_by_projectsId)
+  .put(projects.update_a_tasks);
+
+  app.route('/projects/:projectsId/Tasks/:tasksId/comment')
+  .post(projects.add_task_comment);
+
+  //Subtask
+  app.route('/projects/:projectsId/Tasks/:tasksId/subtask')
+  .post(projects.add_subtask);
+
+  app.route('/projects/:projectsId/Tasks/:tasksId/subtask/:subtaskId')
+  .put(projects.edit_subtask)
+  .delete(projects.remove_subtask);
+
 };

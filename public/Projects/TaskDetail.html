@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+	<link type="text/css" rel="stylesheet" href="../materialize/css/materialize.min.css"  media="screen,projection"/>
+    
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style type="text/css">
+        header, main, footer {
+            padding-left: 250px;
+        }
+        
+        @media only screen and (max-width : 992px) {
+            header, main, footer {
+                padding-left: 0;
+            }
+            
+        }
+        @font-face{
+            font-family: "Roboto";
+            src: url(Roboto-Regular.woff) format('woff');
+        }
+        body{
+            font-family:"Roboto",Verdana;
+        }
+        .btn{
+            text-transform: unset;
+        }
+        
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".button-collapse").sideNav({menuWidth: 220});
+            $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, 
+                hover: false, 
+                gutter: 3, 
+                belowOrigin: true, 
+                alignment: 'left', 
+                stopPropagation: false
+            });
+            $('.modal').modal();
+            $('.datepicker').pickadate({
+                selectMonths: true, 
+                selectYears: 15, 
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: true 
+            });
+            $("#Subscribers").hide();
+            $('#Choose').on("click",function(){
+                $("#Subscribers").toggle();
+            });
+            $('#select-all').click(function(event) {   
+                if(this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = true;                       
+                    });   
+                }
+                if(!this.checked) {
+                    
+                    
+                    $('#checkboxul :checkbox').each(function() {
+                        this.checked = false;                       
+                    });   
+                }
+            });
+            $('#select-none').click(function(event) {   
+                
+                $('#Subscribers :checkbox').each(function(){
+                    this.checked = false;
+                });                    
+                
+                
+            });
+            $('#upload_linkDissNew').on("click",function(){
+                $('#upload_inputDissNew').trigger('click');
+            });
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+                function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+            var projectsId = getUrlVars()['projectsId'];
+            var taskId = getUrlVars()['taskId'];
+            
+            $('#TaskBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
+            $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId+'&taskId='+taskId);
+            
+            //GET Task Data
+            $.ajax({
+                url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+                type:'GET',
+                async:false,
+                success:function(data){
+                    $('#Project_Name').text(data[0].Projects.Project_Name+' '),
+                    $('#Task_Name_Header').text(data[0].Task_Name+' '),
+                    $('#Task_Name_Main').text(data[0].Task_Name),
+                    $('#Task_Name_Modal').text(data[0].Task_Name),
+                    $('#DeleteTask').attr('value',data[0]._id);
+                    $('#Description').text(data[0].Description),
+                    $('#Assignee').val(data[0].Assignee),
+                    $('#Label').val(data[0].Label),
+                    $('#Due_On').val(data[0].Due_Date);
+                    
+                    //GET Subtask
+                    $.each(data[0].Subtask,function(index,val){
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+                        });
+                        if(val.Status != 'Active'){return true}
+                        $('#SubtaskList').append('<p id="Subtask'+val._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+val._id+'" value="'+val._id+'"/><label for="filled-in-box'+val._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+val._id+'">'+val.Assignee+'</span><span id="STN'+val._id+'" class="black-text"> '+val.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+val._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+val._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+val._id+'">Edit</a></li><li><a class="delete-subtask" value="'+val._id+'">Move To Trash</a></li></ul>');
+                        $('.dropdown-button').dropdown({
+							inDuration: 300,
+							outDuration: 225,
+							constrainWidth: false, 
+							hover: false, 
+							gutter: 3, 
+							belowOrigin: true, 
+							alignment: 'left', 
+							stopPropagation: false 
+						});
+                    });
+                    //GET Comments
+                    $.each(data[0].Comments,function(index,val){   
+                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
+                        
+                    });
+                    
+                }
+                
+            });	
+            //Delete
+			$(function () {
+				$("#DeleteTask").click(function() {
+					var TasksIdVal= $(this).attr('value');
+                    
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
+						type:'PUT',
+                        async:false,
+                        headers:{
+                            "header":"Trash"
+                        },
+                        dataType : 'json',
+						success:function(data){
+                            document.location='ProjectsDetail.html?projectsId='+projectsId;  
+						}
+						
+					});
+					
+				});	
+            });
+            //Complete Task
+            $('#CompleteTask').change(function(){
+                
+                $.ajax({
+                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+                    type:'PUT',
+                    async:false,
+                    headers:{
+                        "header":"Complete"
+                    },
+                    dataType : 'json',
+                    success:function(data){
+                        Materialize.toast($('#Task_Name_Main').text()+' Completed', 2000);
+                    }
+                    
+                });
+                
+            });
+            //Add Comment
+            $(function () {
+				$('#AddCommentbtn').on('click', function () {
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/comment',
+						type:'POST',
+						async:true,
+                        data:{
+                            "person":'Iqbalafrianto99',
+                            "message":$('#Message').val()
+                        },
+						dataType : 'json',
+						success:function(data){
+                            var comments = data.Comments.length;
+                            var lascomments = data.Comments[comments - 1];
+                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
+                        }
+                    });  
+                    $('#Message').val(''); 
+                    Materialize.toast('Your Comment Has Been Successfully Added', 2000); 
+				});
+            });    
+            //Subtask//
+            $('#SubTask').hide();
+            $('#EditSubTask').hide();
+            
+            $('#ShowSubtaskForm').on('click',function(){
+                $(this).hide();
+                $('#AddSubTaskForm').show();
+            });
+            $('#CancelSubTask').on('click',function(){
+                $('#AddSubTaskForm').hide();
+               $('#ShowSubtaskForm').show();
+            });
+            //Add Subtask
+            $(function () {
+				$('#AddSubTaskbtn').on('click', function () {
+					$.ajax({
+						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask',
+						type:'POST',
+						async:true,
+                        data:{
+                            "Subtask_Name":$('#SubTaskName').val(),
+                            "Assignee":$('#SubTaskAssignee').val()
+                        },
+						dataType : 'json',
+						success:function(data){
+                            var subtask = data.Subtask.length;
+                            var lastsubtask = data.Subtask[subtask - 1];
+                            
+                            $('#SubtaskList').append('<p id="Subtask'+lastsubtask._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+lastsubtask._id+'" value="'+lastsubtask._id+'"/><label for="filled-in-box'+lastsubtask._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+lastsubtask._id+'">'+lastsubtask.Assignee+'</span><span class="black-text" id="STN'+lastsubtask._id+'"> '+lastsubtask.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+lastsubtask._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+lastsubtask._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+lastsubtask._id+'">Edit</a></li><li><a class="delete-subtask" value="'+lastsubtask._id+'">Move To Trash</a></li></ul>'); 
+                            $('.dropdown-button').dropdown({
+                                inDuration: 300,
+                                outDuration: 225,
+                                constrainWidth: false, 
+                                hover: false, 
+                                gutter: 3, 
+                                belowOrigin: true, 
+                                alignment: 'left', 
+                                stopPropagation: false 
+                            });
+                            $('#SubTaskName').val(''); 
+                            Materialize.toast('New Subtask Added', 2000);  
+                        }
+                    });              
+				});
+            });  
+            //Complete Subtask
+            $(document).on('change', ".filled-in.complete-subtask", function() {
+                var SubTasksIdVal= $(this).attr('value');
+                $.ajax({
+                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                    type:'PUT',
+                    async:false,
+                    headers:{
+                        "header":"Complete"
+                    },
+                    dataType : 'json',
+                    success:function(data){
+                        $('#Subtask'+SubTasksIdVal).hide();
+                        Materialize.toast('Completed', 4000);
+                    }
+                    
+                });     
+            });
+            
+            //Delete Subtask Modal Data
+			$(function () {
+				$(".delete-subtask").click(function() {
+                    
+                    var SubTasksIdVal= $(this).attr('value');
+                    
+                    $('#Subtask_Name_Modal').text($('#STN'+SubTasksIdVal).text());
+                    $('#DeleteSubtask').attr('value',SubTasksIdVal);
+                    $('#MoveToTrashSubTask').modal('open');
+                    
+                });	
+            });
+            //Delete Subtask
+			$(function () {
+				$("#DeleteSubtask").click(function() {
+					var SubTasksIdVal= $(this).attr('value');
+                    
+					$.ajax({
+                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                        type:'DELETE',
+                        async:false,
+                        dataType : 'json',
+                        success:function(data){
+                            $('#Subtask'+SubTasksIdVal).hide();
+                            Materialize.toast('Deleted', 2000);
+                            $('#MoveToTrashSubTask').modal('close');
+                        }
+                        
+                    });
+					
+				});	
+            });
+            $(document).on('click', ".EditSubTaskbtn", function() {
+                var SubTasksIdVal= $(this).attr('value');
+                $('#SubtaskNameEdit').val($('#STN'+SubTasksIdVal).text());
+                $('#SubtaskAssigneeEdit').val($('#STA'+SubTasksIdVal).text());
+                $('#CancelEditSubTask').attr('value',SubTasksIdVal);
+                $('#handelEditSubtask').attr('value',SubTasksIdVal);
+                $('#Subtask'+SubTasksIdVal).hide();
+                $('#EditSubTask').show();
+                   
+            });
+           $(function(){
+               $('#handelEditSubtask').on('click',function(){
+                var SubTasksIdVal= $(this).attr('value');
+                $.ajax({
+                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
+                        type:'PUT',
+                        async:false,
+                        data:{
+                            "Subtask_Name":$('#SubtaskNameEdit').val(),
+                            "Assignee":$('#SubtaskAssigneeEdit').val()
+                        },
+                        dataType : 'json',
+                        success:function(data){
+                           document.location.reload();
+                        }
+                        
+                    });  
+               });
+           });
+            $('#CancelEditSubTask').on('click',function(){
+                var SubTasksIdVal= $(this).attr('value');
+                $('#Subtask'+SubTasksIdVal).show();
+                $('#EditSubTask').hide();
+            });
+            
+            
+            //Subtask//
+            
+            $('#AddComment').hide();
+            
+            $('#Message').on('focus',function(){
+                $('#AddComment').show();
+            });
+            $('#Message').on('blur',function(){
+                
+                if(!$.trim($("#Message").val())){
+                    $('#AddComment').hide()
+                }
+                else{
+                    $('#AddComment').show()
+                }
+                
+            });
+        });
+    </script>
+    
+    <ul id="slide-out" class="side-nav fixed red lighten-1 white-text">
+        <li>
+            <h5>ActiveCollabV2<i class="material-icons right small">search</i></h5>
+        </li>
+        <li>
+            <div class="divider red accent-1"></div>
+        </li>
+        <li class="active">
+            <a href="../Projects/Projects.html">Projects<i class="material-icons left small">business_center</i></a>
+        </li>
+        <li>
+            <a href="#!">My Work<i class="material-icons left small">computer</i></a>
+        </li>
+        <li>
+            <a href="#!">Activity<i class="material-icons left small">hourglass_full</i></a>
+        </li>
+        <li>
+            <a href="#!">Calendar<i class="material-icons left small">today</i></a>
+        </li>
+        <li>
+            <a href="#!">People<i class="material-icons left small">group</i></a>
+        </li>
+        <li>
+            <a href="../Invoices/Invoices.html">Invoices<i class="material-icons left small">local_atm</i></a>
+        </li>
+        <li>
+            <a href="#!">Estimates<i class="material-icons left small">filter_tilt_shift</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        <li>
+            <a href="#!">Reports<i class="material-icons left small">report</i></a>
+        </li>
+        <li>
+            <a href="#!">Trash<i class="material-icons left small">delete</i></a>
+        </li>
+        <li>
+            <a href="#!">Add ons<i class="material-icons left small">settings_input_composite</i></a>
+        </li>
+        <li>
+            <a href="#!">Settings<i class="material-icons left small">settings</i></a>
+        </li>
+        <li><div class="divider red accent-1"></div></li>
+        
+        <li>
+            <img src="" class="circle left"><a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+        </li>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+    <header>
+        
+    </header>
+    <main>
+        
+        <!--Isi Nya Disini!-->
+        
+        
+        <a id="TaskBack" class="btn btn-small red lighten-1" style="margin-top: 15px;margin-bottom: 15px;"><i class="material-icons">reply</i>Task</a> 
+        
+        
+        <div class="row">
+            <div class="col s12 m8 l9">
+                <p class="grey-text">
+                    <span id="Project_Name"></span><span id="Task_Name_Header"></span> Created by <span>uploader </span>on <span>Date</span>
+                    <a id="EditTask" class="btn btn-flat" style="text-transform:unset">Edit Task</a>
+                    <a href="#MoveToTrashTask" class="btn btn-flat modal-trigger" style="text-transform:unset"><i class="material-icons">delete</i></a>
+                    <a class="btn btn-flat dropdown-button" data-activates="TaskMore" style="text-transform:unset"><i class="material-icons">more_horiz</i></a>
+                    <ul id="TaskMore" class="dropdown-content">
+                        <li><a>Duplicate</a></li>
+                        <li><a>Create Recurring Task</a></li>
+                        <li><a>Move / Copy To Projects</a></li>
+                        <li class="divider"></li>
+                        <li><a>Access Logs</a></li>
+                    </ul>
+                </p> 
+                
+                <div class="row">
+                    <div class="col s12">
+                        <input type="checkbox" class="filled-in" id="CompleteTask"/>
+                        <label for="CompleteTask" class="black-text"><h5><b id="Task_Name_Main"></b></h5></label>
+                        <p id="Description">Description</p>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="col s12">
+                        <!--Subtask List-->
+                        <h6><b>Subtasks</b></h6>
+                        <div id="SubtaskList">
+                            <p id="Subtask" class="subtask">
+                                <input type="checkbox" class="filled-in" id="filled-in-box"/>
+                                <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask"><i class="material-icons" >more_horiz</i></a>
+                            </p>
+                        </div>
+                        <ul id="DDSubTask" class="dropdown-content">
+                            <li><a id="EditSubTaskbtn">Edit</a></li>
+                            <li><a href="#MoveToTrashSubTask" class="modal-trigger">Move To Trash</a></li>
+                        </ul>
+                        <!-- Move To  Trash SubTask Modal -->
+                        <div class="modal" id="MoveToTrashSubTask">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move "<span id="Subtask_Name_Modal"></span>" to Trash?</h5>
+                                    
+                                    <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                    
+                                    <div class="row">
+                                        <a id="DeleteSubtask" href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move To Trash SubTask Modal -->
+                        <!-- Move To  Trash Task Modal -->
+                        <div class="modal" id="MoveToTrashTask">
+                            <div class="modal-content">
+                                <div class="container">
+                                    <h5>Move "<span id="Task_Name_Modal"></span>" to Trash?</h5>
+                                    
+                                    <h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6>
+                                    
+                                    <div class="row">
+                                        <a id="DeleteTask" href="javascript:;" class="btn red" style="text-transform: unset">Move to Trash</a>
+                                        <a href="javascript:;" class="btn grey lighten-1 modal-close" style="text-transform: unset">Cancel</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Move To Trash Task Modal -->
+                        <!--Edit Subtask--> 
+                        <div class="row" id="EditSubTask">
+                            <div class="col s12 m10 l9">
+                                <input id="SubtaskNameEdit" type="text" placeholder="Name Of The Subtask">
+                            </div>
+                            <div class="col s12 m12 l3">
+                                <select id="SubtaskAssigneeEdit" class="browser-default">
+                                    <option value="" disabled selected>Assignee</option>
+                                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                                    <option value="nur.rizki">nur.rizki</option>
+                                    <option value="hendysantoso911">hendysantoso911</option>
+                                </select>
+                            </div>
+                            <div class="col s12">
+                                <a id="handelEditSubtask" class="btn blue">Update</a>
+                                <a class="btn white black-text" id="CancelEditSubTask">Cancel</a>
+                            </div>
+                        </div>
+                        <a class="btn red darken-1" id="ShowSubtaskForm">Add subtask</a>
+                        <div class="row" id="AddSubTaskForm">
+                            <div class="col s12 m10 l9">
+                                <input id="SubTaskName" type="text" placeholder="Name Of The Subtask">
+                            </div>
+                            <div class="col s12 m12 l3">
+                                <select class="browser-default" id="SubTaskAssignee">
+                                    <option value="" disabled selected>Assignee</option>
+                                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                                    <option value="nur.rizki">nur.rizki</option>
+                                    <option value="hendysantoso911">hendysantoso911</option>
+                                </select>
+                            </div>
+                            <div class="col s12">
+                                <a class="btn blue" id="AddSubTaskbtn">Add</a>
+                                <a class="btn white black-text" id="CancelSubTask">Cancel</a>
+                            </div>
+                        </div>
+                        <div class="divider" style="margin-top:25px;margin-bottom:15px;"></div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="Message" class="materialize-textarea"></textarea>
+                                <label for="Message">Write a comment</label>
+                            </div>        
+                            <div id="AddComment">
+                                <div class="col s12" style="margin-bottom:10px">
+                                    <a id="AddCommentbtn" href="javascript:;" class="btn blue" style="text-transform: unset">Add Comment</a>
+                                    <a href="javascript:;" class="btn grey" style="text-transform: unset">Cancel</a>
+                                </div>
+                            </div>
+                            <div id="comment">
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="divider" style="margin-top:25px;margin-bottom:15px;"></div>
+                        <a href="#!" style="text-decoration:underline">Show history of changes</a>
+                    </div>
+                </div> 
+            </div>
+            <div class="col s12 m4 l3">
+                <h6><b>Task List</b></h6>
+                <select class="browser-default">
+                    <option value="">Inbox</option>
+                </select>
+                <p><b>Assignee</b></p>
+                <select id="Assignee" class="browser-default">
+                    <option value="" selected disabled>Assignee</option>
+                    <option value="iqbalafrianto99">iqbalafrianto99</option>
+                    <option value="nur.rizki">nur.rizki</option>
+                    <option value="hendysantoso911">hendysantoso911</option>
+                </select>
+                <p><b>Label</b></p>
+                <select id="Label" class="browser-default">
+                    <option value="" selected disabled>Label</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="New">New</option>
+                </select>
+                <p><b>Due On</b></p>
+                <input id="Due_On" type="text" class="datepicker">
+                <p><b>Time Estimation</b></p>
+                <a href="#">Set...</a><br>
+                <input type="checkbox" class="filled-in" id="HiddenClientsTask">
+                <label for="HiddenClientsTask">Hidden From Clients</label>
+                <input type="checkbox" class="filled-in" id="HighPriority">
+                <label for="HighPriority">High Priority</label>
+                <p>
+                    <b>Subscribers</b>
+                    <span style="float:right">
+                        <a href="javascript:;" id="Choose">Choose</a>
+                    </span>
+                    <div id="Subscribers">  
+                        <fieldset>
+                            <input type="checkbox" class="filled-in" id="select-all"/>
+                            <label for="select-all">Select All .</label>
+                            <a href="javascript:;" id="select-none" class="grey-text">Select None</a>
+                            <br>
+                            
+                            <ul id="checkboxul">
+                                <li>
+                                    
+                                    <input type="checkbox" class="filled-in" id="Clients"/>
+                                    <label for="Clients"><b>Brilyan Trimatra Utama</b></label>
+                                    
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams1"/>
+                                    <label for="Teams1">hendysantoso911</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams2"/>
+                                    <label for="Teams2">nur.rizki21</label>
+                                </li>
+                                <li>
+                                    <input type="checkbox" class="filled-in" id="Teams3"/>
+                                    <label for="Teams3">iqbalafrianto99@gmail.com</label>
+                                </li>
+                            </ul>   
+                        </fieldset>   
+                    </div>
+                    <div class="section">
+                        <input type="checkbox" class="filled-in" id="HiddenFromClients"/>
+                        <label for="HiddenFromClients">Hidden From Clients</label>
+                    </div>
+                </p>
+            </div>
+        </div>
+        
+    </main>
+    <footer>
+        <!--Puter Kalo Emg Make Puter!-->
+    </footer>
+</body>
+</html>
