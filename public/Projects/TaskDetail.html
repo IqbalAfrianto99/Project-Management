@@ -217,11 +217,14 @@
             $('#SubTask').hide();
             $('#EditSubTask').hide();
             
-            $('#AddSubTaskForm').on('click',function(){
+            $('#ShowSubtaskForm').on('click',function(){
                 $(this).hide();
-                $('#SubTask').show();
+                $('#AddSubTaskForm').show();
             });
-            
+            $('#CancelSubTask').on('click',function(){
+                $('#AddSubTaskForm').hide();
+               $('#ShowSubtaskForm').show();
+            });
             //Add Subtask
             $(function () {
 				$('#AddSubTaskbtn').on('click', function () {
@@ -341,10 +344,7 @@
                 $('#EditSubTask').hide();
             });
             
-            $('#CancelSubTask').on('click',function(){
-                $('#SubTask').hide();
-               $('#AddSubTaskForm').show();
-            });
+            
             //Subtask//
             
             $('#AddComment').hide();
@@ -512,8 +512,8 @@
                                 <a class="btn white black-text" id="CancelEditSubTask">Cancel</a>
                             </div>
                         </div>
-                        <a class="btn red darken-1" id="AddSubTaskForm">Add subtask</a>
-                        <div class="row" id="SubTask">
+                        <a class="btn red darken-1" id="ShowSubtaskForm">Add subtask</a>
+                        <div class="row" id="AddSubTaskForm">
                             <div class="col s12 m10 l9">
                                 <input id="SubTaskName" type="text" placeholder="Name Of The Subtask">
                             </div>
