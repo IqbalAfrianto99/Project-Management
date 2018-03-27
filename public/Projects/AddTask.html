@@ -33,6 +33,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Tasks.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -86,28 +87,13 @@
             }
             var projectsId = getUrlVars()['projectsId'];
             //Create Task
-            $(function () {
-				$("#AddTask").click(function() {
-                    $.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks',
-						type:'POST',
-                        async:false,
-                        data:{
-                            "Task_Name":$('#Task_Name').val(),
-                            "Description":$('#Description').val(),
-                            "Assignee":$('#Assignee').val(),
-                            "Label":$('#Label').val(),
-                            "Due_Date":$('#Due_On').val()
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            Materialize.toast('New Task Added', 4000,'',function(){document.location = 'ProjectsDetail.html?projectsId='+projectsId});
-
-                        }
-						
-					});		
-				});	
-			});
+            $("#AddTask").click(function() {
+                createTask(projectsId,$('#Task_Name').val(),$('#Description').val(),$('#Assignee').val(),$('#Label').val(),$('#Due_On').val());
+                //Empty Field
+                $('#Task_Name').val(''),$('#Description').val('');		
+            });	
+            
+            
             $('#TaskBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
         });
     </script>
@@ -173,7 +159,7 @@
                 <div class="col s12 m6">
                     <input id="Task_Name" type="text" placeholder="Task Name">
                     <div class="input-field">
-                        <textarea id="Description" class="materialize-textarea"></textarea>
+                        <textarea id="Description" class="materialize-textarea" required></textarea>
                         <label for="Description">Task Description</label>
                     </div>
                     <p>

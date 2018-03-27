@@ -52,6 +52,7 @@
 <body>
 	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+	<script type="text/javascript" src="../data/Projects.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$(".button-collapse").sideNav({menuWidth: 220});
@@ -69,43 +70,21 @@
 				return vars;
 			}
 			var param = getUrlVars()['projectsId'];
-			
-			$.ajax({
-				url:'http://localhost:3000/projects/'+param,
-				type:'GET',
-				async:false,
-				contentType:'application/json',
-				success:function(data){
-					$('#EditProjectForm').attr('action','http://localhost:3000/projects/'+data._id+'/edit');
-					$('#Header').text(data.Project_Name);
-					$('#Project_Name').val(data.Project_Name);  
-					$('#Description').val(data.Description);  
-					$('#Category').val(data.Category);  
-					$('#Label').val(data.Label);
-					$('#Client_Company').val(data.Client_Company);
-					$('#Template').val(data.Template);
+			var Projects = readProjects(param);
+					$('#Header').text(Projects.Project_Name);
+					$('#Project_Name').val(Projects.Project_Name);  
+					$('#Description').val(Projects.Description);  
+					$('#Category').val(Projects.Category);  
+					$('#Label').val(Projects.Label);
+					$('#Client_Company').val(Projects.Client_Company);
+					$('#Template').val(Projects.Template);
 					
-				}
-			});
+			
 			
 			$(function () {
 				$('#Save').on('click', function () {
 					document.location = "Projects.html";
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+param,
-						type:'PUT',
-						async:true,
-						data: {
-							"Project_Name":$('#Project_Name').val(),
-							"Description": $('#Description').val(),
-							"Category":$('#Category').val(),
-							"Label":$('#Label').val(),
-							"Client_Company":$('#Client_Company').val(),
-							"Template":$('#Template').val()
-						},
-						dataType : 'json',
-						
-					});
+					updateProjects(param,$('#Project_Name').val(),$('#Description').val(),$('#Category').val(),$('#Label').val(),$('#Client_Company').val(),$('#Template').val());
 				});
 			});
 		});

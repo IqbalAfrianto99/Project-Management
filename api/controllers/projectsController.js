@@ -385,7 +385,6 @@ exports.add_task_comment = function(req,res){
     Tasks.findOneAndUpdate({ _id: req.params.tasksId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,tasks){
         if(err) 
         res.send(err);
-        
         res.json(tasks);
     });   
 }

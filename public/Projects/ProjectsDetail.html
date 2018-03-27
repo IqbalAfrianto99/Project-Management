@@ -40,6 +40,8 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Projects.js"></script>
+    <script type="text/javascript" src="../data/Tasks.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -115,20 +117,17 @@
             $('#AddTask').attr('href','AddTask.html?projectsId='+projectsId);
             $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId);
             
+            //REQUEST DATA
+            var Projects = readProjects(projectsId);
+            var Tasks = getAllTask(projectsId);
+            
             //GET PROJECT DATA
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    $('#Project_Name').text(data.Project_Name);
-                    $('#Client_Company').text(data.Client_Company);
-                    $('#Category').text(data.Category);
-                    $('#Label').text(data.Label);
-                    
-                }
-            });
+            $('#Project_Name').text(Projects.Project_Name);
+            $('#Client_Company').text(Projects.Client_Company);
+            $('#Category').text(Projects.Category);
+            $('#Label').text(Projects.Label);
+            
+            
             //GET NOTES BY PROJECTS ID
             $.ajax({
                 url:'http://localhost:3000/projects/'+projectsId+'/Notes',
@@ -302,58 +301,29 @@
                     }); 
                 });	
             });
-            function isEmpty(string){
-                if(!string){
-                    return "";
-                }
-                else{
-                    return string;
-                }
-                
-            }
-            function isEmptyAssignee(string){
-                if(!string){
-                    return "not set";
-                }
-                else{
-                    return string;
-                }
-                
-            }
             //GET Task BY PROJECT
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Tasks',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-                        $('#ListOfTask').append('<p id="checkboxarea'+data[i]._id+'" class="task"><input type="checkbox" class="filled-in complete-task" id="filled-in-box'+data[i]._id+'" value="'+data[i]._id+'"/><label for="filled-in-box'+data[i]._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">'+isEmptyAssignee(data[i].Assignee)+'</span> <span><a id="TN'+data[i]._id+'" href="TaskDetail.html?projectsId='+projectsId+'&taskId='+data[i]._id+'"  class="black-text">'+isEmpty(data[i].Task_Name)+'</a></span><span>-'+isEmpty(data[i].Due_Date)+'</span>.<span class="green-text">'+isEmpty(data[i].Label)+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDTask'+data[i]._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDTask'+data[i]._id+'" class="dropdown-content"><li><a id="EditTask" href="EditTask.html?projectsId='+projectsId+'&taskId='+data[i]._id+'">Edit</a></li><li><a class="delete-task" value="'+data[i]._id+'">Move To Trash</a></li></ul>');
-                        i++;
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-                    });
-                    
-                } 
+            $.each(Tasks,function(key,val){
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
+                $('#ListOfTask').append(appendTasks(projectsId,val._id,val.Task_Name,val.Assignee,val.Label,val.Due_Date));
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
             });
             //Delete Modal Data
 			$(function () {
@@ -364,48 +334,26 @@
                     $('#MoveToTrashTask').modal('open');
 				});	
             });
-            //Delete
+            //Delete Task
 			$(function () {
 				$("#Delete_Task").click(function() {
 					var TasksIdVal= $(this).attr('value');
-
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
-						type:'PUT',
-                        async:false,
-                        headers:{
-                            "header":"Trash"
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            $('#MoveToTrashTask').modal('close');
-                            $('#checkboxarea'+TasksIdVal).hide();
-							Materialize.toast($('#TN'+TasksIdVal).text()+'Deleted', 4000);
-						}
-						
-					});
-					
+                    deleteTaskById(projectsId,TasksIdVal);
+                    //Callback
+                    $('#MoveToTrashTask').modal('close');
+                    $('#checkboxarea'+taskId).hide();
+                    Materialize.toast($('#TN'+taskId).text()+' Deleted', 4000);
 				});	
             });
             //Complete Task
             $('.filled-in.complete-task').change(function(){
                 var TasksIdVal= $(this).attr('value');
-                $.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
-						type:'PUT',
-                        async:false,
-                        headers:{
-                            "header":"Complete"
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            $('#checkboxarea'+TasksIdVal).hide();
-							Materialize.toast($('#TN'+TasksIdVal).text()+' Completed', 4000);
-						}
-						
-					});
+                completeTaskById(projectsId,TasksIdVal);
+                //Callback
+                $('#checkboxarea'+taskId).hide();
+                Materialize.toast($('#TN'+taskId).text()+' Completed', 2000);
             });
-           
+            
             $('.btn.btn-flat').hide();
             $('.task').on('mouseenter', function () {
                 $(this).find(".btn.btn-flat").show();
@@ -563,10 +511,10 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs red-text text-darken-2 default">
-                    <li class="tab col s1"><a href="#Tasks" style="text-transform:unset">Tasks</a></li>
+                    <li class="tab col s1"><a href="#Tasks"  class="active" style="text-transform:unset">Tasks</a></li>
                     <li class="tab col s2"><a href="#Discussions" style="text-transform:unset">Discussion</a></li>
                     <li class="tab col s1"><a href="#Files" style="text-transform:unset">Files</a></li>
-                    <li class="tab col s2"><a href="#Notes"  class="active" style="text-transform:unset">Notes</a></li>
+                    <li class="tab col s2"><a href="#Notes" style="text-transform:unset">Notes</a></li>
                     <li class="tab col s1"><a href="#Time" style="text-transform:unset">Time</a></li>
                     <li class="tab col s2"><a href="#Expenses" style="text-transform:unset">Expenses</a></li>
                     <li class="tab col s3"><a href="#Activity" style="text-transform:unset">Activity</a></li>
