@@ -42,7 +42,7 @@ function checkStringLength(text,length){
 function getAllFiles(projectsId){
     var result;
     $.ajax({
-        url:'http://localhost:3000/projects/'+projectsId+'/Files',
+        url:'/projects/'+projectsId+'/Files',
         type:'GET',
         async:false,
         contentType:'application/json',
