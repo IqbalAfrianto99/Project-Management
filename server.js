@@ -28,9 +28,10 @@ var projects = require('./api/routes/projectsRoutes');
 routes(app); //register the route
 projects(app);
 
-var server = app.listen(port,function(){
-    console.log('Server run on port: '+port);
-});
+var server = app.listen(process.env.PORT || 3000, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+  });
+
 
 /*
 var io = socket(server);

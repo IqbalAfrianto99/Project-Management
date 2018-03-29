@@ -44,6 +44,7 @@
     <script type="text/javascript" src="../data/Tasks.js"></script>
     <script type="text/javascript" src="../data/Files.js"></script>
     <script type="text/javascript" src="../data/Discussion.js"></script>
+    <script type="text/javascript" src="../data/Notes.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -124,6 +125,7 @@
             var Tasks = getAllTask(projectsId);
             var Files = getAllFiles(projectsId);
             var Discussions = getAllDiscussion(projectsId);
+            var Notes = getAllNotes(projectsId);
             
             //GET PROJECT DATA
             $('#Project_Name').text(Projects.Project_Name);
@@ -133,20 +135,11 @@
             
             
             //GET NOTES BY PROJECTS ID
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Notes',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+data[i]._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='word-wrap: break-word'><span class='card-title'><b>"+checkStringLength(data[i].Note_Title,60)+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+checkStringLength(data[i].Content,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
-                        i++;
-                    });
-                    
-                } 
+            
+            $.each(Notes,function(key,val){
+                $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+val._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='word-wrap: break-word'><span class='card-title'><b>"+checkStringLength(val.Note_Title,60)+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+checkStringLength(val.Content,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
             });
+            
             //GET DISCUSSION BY PROJECT
             
             $.each(Discussions,function(key,val){

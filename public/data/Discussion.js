@@ -72,7 +72,7 @@ function deleteDiscussionById(projectsId,discId){
 }
 function addDiscComment(projectsId,discId,person,message){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId+'/comment',
+        url: '/projects/'+projectsId+'/Discussions/'+discId+'/comment',
         type:'POST',
         async:true,
         data:{

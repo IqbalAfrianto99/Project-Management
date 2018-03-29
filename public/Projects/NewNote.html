@@ -41,6 +41,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Notes.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -89,17 +90,8 @@
             
             $(function(){
                 $('#CreateNote').on('click',function(){
+                    createNote(projectsId,$('#Note_Title').val(),$('#Content').val());
                     document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                    $.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Notes',
-						type:'POST',
-						async:false,
-						data: {
-							"Note_Title":$('#Note_Title').val(),
-							"Content": $('#Content').val(),
-						},
-						dataType : 'json',	
-                    });
                 });   
             });   
             $('#BackNote').attr('href','ProjectsDetail.html?projectsId='+projectsId);
