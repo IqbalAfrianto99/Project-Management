@@ -3,7 +3,7 @@ function getAllProjects(header){
     if(header != null){
         $.ajax(
             {
-                url:'http://localhost:3000/projects/',
+                url:'/projects/',
                 type:'GET',
                 async: false,
                 headers:{
@@ -19,7 +19,7 @@ function getAllProjects(header){
     else{
         $.ajax(
             {
-                url:'http://localhost:3000/projects/',
+                url:'/projects/',
                 type:'GET',
                 async: false,
                 contentType : 'application/json',
@@ -34,7 +34,7 @@ function getAllProjects(header){
 
 function deleteProjects(projectsId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId,
+        url: '/projects/'+projectsId,
         type:'DELETE',
         async:true,
         success:function(data){
@@ -46,7 +46,7 @@ function deleteProjects(projectsId){
 function completeOrReopenProjects(projectsId,action){
     if(action == 'COMPLETED'){
         $.ajax({
-            url: 'http://localhost:3000/projects/'+projectsId,
+            url: '/projects/'+projectsId,
             type:'PUT',
             async:true,
             data:{
@@ -60,7 +60,7 @@ function completeOrReopenProjects(projectsId,action){
     }
     else{
         $.ajax({
-            url: 'http://localhost:3000/projects/'+projectsId,
+            url: '/projects/'+projectsId,
             type:'PUT',
             async:true,
             data:{
@@ -83,7 +83,7 @@ function Projects_Card(_id,Project_Name,Label,Client_Company){
 function readProjects(projectsId){
     var result;
     $.ajax({
-        url:'http://localhost:3000/projects/'+projectsId,
+        url:'/projects/'+projectsId,
         type:'GET',
         async:false,
         contentType:'application/json',
@@ -96,7 +96,7 @@ function readProjects(projectsId){
 
 function updateProjects(projectsId,PN,D,C,L,CC,T){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId,
+        url: '/projects/'+projectsId,
         type:'PUT',
         async:true,
         data: {

@@ -61,7 +61,7 @@ function appendFiles(projectsId,File_Name,_id,Date_Display){
 }
 function deleteFiles(projectsId,filesId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Files/'+filesId,
+        url: '/projects/'+projectsId+'/Files/'+filesId,
         type:'PUT',
         async:true,
         headers:{
@@ -73,7 +73,7 @@ function deleteFiles(projectsId,filesId){
 }
 function uploadFiles(projectsId,data){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Files',
+        url: '/projects/'+projectsId+'/Files',
         data: data,
         cache: false,
         contentType: false,

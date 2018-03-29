@@ -43,6 +43,7 @@
     <script type="text/javascript" src="../data/Projects.js"></script>
     <script type="text/javascript" src="../data/Tasks.js"></script>
     <script type="text/javascript" src="../data/Files.js"></script>
+    <script type="text/javascript" src="../data/Discussion.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -122,6 +123,7 @@
             var Projects = readProjects(projectsId);
             var Tasks = getAllTask(projectsId);
             var Files = getAllFiles(projectsId);
+            var Discussions = getAllDiscussion(projectsId);
             
             //GET PROJECT DATA
             $('#Project_Name').text(Projects.Project_Name);
@@ -146,20 +148,12 @@
                 } 
             });
             //GET DISCUSSION BY PROJECT
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Discussions',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('#DiscsussionByProject').append("<div class='divider'></div><div class='section'><a href='DiscussionDetail.html?discId="+data[i]._id+"&projectsId="+projectsId+"'>"+data[i].Discussion_Name+" (4)</a><p>hendysantoso911:halo<span style='float: right'>3 days ago</span></p></div>");
-                        i++;
-                    });
-                    
-                } 
+            
+            $.each(Discussions,function(key,val){
+                $('#DiscsussionByProject').append("<div class='divider'></div><div class='section'><a href='DiscussionDetail.html?discId="+val._id+"&projectsId="+projectsId+"'>"+val.Discussion_Name+" (4)</a><p>hendysantoso911:halo<span style='float: right'>3 days ago</span></p></div>");   
             });
+            
+            
             $('#progress').hide();
             //INPUT FILE
             $(function () {
@@ -171,7 +165,7 @@
                     uploadFiles(projectsId,data);
                 });
             });
-               
+            
             //GET FILES BY PROJECT 
             $.each(Files,function(key,val){
                 $('.dropdown-button').dropdown({
@@ -197,7 +191,7 @@
                     stopPropagation: false 
                 });
                 $('.modal').modal();
-              
+                
             });
             //MOVE FILE TO TRASH
             $(function () {
@@ -249,8 +243,8 @@
                     deleteTaskById(projectsId,TasksIdVal);
                     //Callback
                     $('#MoveToTrashTask').modal('close');
-                    $('#checkboxarea'+taskId).hide();
-                    Materialize.toast($('#TN'+taskId).text()+' Deleted', 4000);
+                    $('#checkboxarea'+TasksIdVal).hide();
+                    Materialize.toast($('#TN'+TasksIdVal).text()+' Deleted', 4000);
 				});	
             });
             //Complete Task
@@ -258,8 +252,8 @@
                 var TasksIdVal= $(this).attr('value');
                 completeTaskById(projectsId,TasksIdVal);
                 //Callback
-                $('#checkboxarea'+taskId).hide();
-                Materialize.toast($('#TN'+taskId).text()+' Completed', 2000);
+                $('#checkboxarea'+TasksIdVal).hide();
+                Materialize.toast($('#TN'+TasksIdVal).text()+' Completed', 2000);
             });
             
             $('.btn.btn-flat').hide();

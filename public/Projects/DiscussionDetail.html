@@ -52,6 +52,8 @@
 <body>
 	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Projects.js"></script>
+    <script type="text/javascript" src="../data/Discussion.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
             //add comment branch
@@ -120,62 +122,37 @@
             $('#DiscBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $('#Project_Name').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $('#EditDisc').attr('href','EditDiscussion.html?projectsId='+projectsId+'&discId='+discId);
+            //Data
+            var Discussion = readDiscussionById(projectsId,discId);
+            var Projects = getAllProjects();
+            console.log(Projects);
             //GET DISCUSSION DATA
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    $('#Discussion_Name').text(data[0].Discussion_Name);
-                    $('#Discussion_About').text(data[0].Discussion_About);
-                    $('#Project_Name').text(data[0].Projects[0].Project_Name);
-                    $("[id=DiscNameInModal]").text(data[0].Discussion_Name);
-                    //GET Comments 
-                    var i;
-                    var Comments=data[0].Comments.length;
-                    for(i=0;i <= Comments;i++){
-                        var message = data[0].Comments[i].message;
-                        var person = data[0].Comments[i].person;
-                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
-                    }
-                }
+            
+            $('#Discussion_Name').text(Discussion[0].Discussion_Name);
+            $('#Discussion_About').text(Discussion[0].Discussion_About);
+            $('#Project_Name').text(Discussion[0].Projects[0].Project_Name);
+            $("[id=DiscNameInModal]").text(Discussion[0].Discussion_Name);
+            //GET Comments 
+            $.each(Discussion[0].Comments,function(index,val){   
+                $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
                 
             });
             //Move Discussion To Trash
             $(function () {
 				$('#MoveDiscToTrash').on('click', function () {
                     document.location = "ProjectsDetail.html?projectsId="+projectsId;
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
-						type:'PUT',
-						async:true,
-                        headers:{
-                            "movetotrash":"Trash"
-                        },
-						dataType : 'json',
-						
-                    });
-                    
+					deleteDiscussionById(projectsId,discId);
 				});
 			});
             //GET All Projects
-            $.ajax({
-                url:'http://localhost:3000/projects',
-				type:'GET',
-				async:false,
-				contentType:'application/json',
-                success:function(data){
-                    
-                    $.each(data,function(key,val){
-                    if(data[key]._id == projectsId){return true;}
-                        $('select').material_select();
-                        $('#ProjectDropdown').append("<option value='"+ data[key]._id+"'>"+data[key].Project_Name +"</option>");
-                        $('select').material_select();
-                        key++;
-                    });
-                } 
+            
+            $.each(Projects,function(key,val){
+                if(val._id == projectsId){return true;}
+                $('select').material_select();
+                $('#ProjectDropdown').append("<option value='"+ val._id+"'>"+val.Project_Name +"</option>");
+                $('select').material_select();
             });
+            
             var length = $('.person').length;
             var person2 = $('.person');
             var message2 = $('.message');
@@ -190,33 +167,13 @@
                         if($('#LeaveCopy').is(':checked')){
                             //COPY DISCUSSION
                             //Make New Discussion
-                            $.ajax({
-                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions',
-                                type:'POST',
-                                async:true,
-                                data:{
-                                    "Discussion_Name":$('#Discussion_Name').text(),
-                                    "Discussion_About":$('#Discussion_About').text()
-                                },
-                                dataType : 'json',
-                                success:function(data){
-                                    var id = data._id;
-                                    alert('new Disc id: ' + id);
-                                    for(i=0;i<length;i++)
-                                    { 
-                                        $.ajax({
-                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions/'+id+'/comment',
-                                            type:'POST',
-                                            async:true,
-                                            data:{
-                                                "person":person2.eq(i).text(),
-                                                "message":message2.eq(i).text()
-                                            },
-                                            dataType : 'json',   
-                                        });  
-                                    }  
-                                }     
-                            });
+                            var NewDisc = createDiscussion(ProjectsDropdown,$('#Discussion_Name').text(),$('#Discussion_About').text());
+                            var id = NewDisc._id;
+                            //Insert Comment
+                            for(i=0;i<length;i++)
+                            { 
+                                addDiscComment(ProjectsDropdown,id,person2.eq(i).text(),message2.eq(i).text());
+                            }  
                             
                             //Closing Modals and making toast
                             $('#Move').modal('close');
@@ -225,44 +182,15 @@
                         else{
                             //MOVE Discussion
                             //Make New Discussion
-                            $.ajax({
-                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions',
-                                type:'POST',
-                                async:true,
-                                data:{
-                                    "Discussion_Name":$('#Discussion_Name').text(),
-                                    "Discussion_About":$('#Discussion_About').text()
-                                },
-                                dataType : 'json',
-                                success:function(data){
-                                    var id = data[0]._id;
-                                    for(i=0;i<length;i++)
-                                    { 
-                                        $.ajax({
-                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Discussions/'+id+'/comment',
-                                            type:'POST',
-                                            async:true,
-                                            data:{
-                                                "person":person2.eq(i).text(),
-                                                "message":message2.eq(i).text()
-                                            },
-                                            dataType : 'json',   
-                                        });  
-                                    }  
-                                }
-                                
-                            }); 
+                            var NewDisc = createDiscussion(ProjectsDropdown,$('#Discussion_Name').text(),$('#Discussion_About').text());
+                            var id = NewDisc._id;
+                            for(i=0;i<length;i++)
+                            { 
+                                addDiscComment(ProjectsDropdown,id,person2.eq(i).text(),message2.eq(i).text()); 
+                            }  
                             
                             //Delete this Discussions
-                            $.ajax({
-                                url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
-                                type:'PUT',
-                                async:true,
-                                headers:{
-                                    "movetotrash":"Trash"
-                                },
-                                dataType : 'json',
-                            });
+                            deleteDiscussionById(projectsId,discId);
                             
                             //Closing Modals and making toast
                             $('#Move').modal('close');
@@ -292,23 +220,13 @@
             
             $(function () {
 				$('#AddCommentbtn').on('click', function () {
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId+'/comment',
-						type:'POST',
-						async:true,
-                        data:{
-                            "person":'Iqbalafrianto99',
-                            "message":$('#Message').val()
-                        },
-						dataType : 'json',
-						success:function(data){
-                            var comments = data.Comments.length;
-                            var lascomments = data.Comments[comments - 1];
-                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
-                        }
-                    });  
+                    addDiscComment(projectsId,discId,'iqbalafrianto99',$('#Message').val());
+
+                    var DiscussionComment = readDiscussionById(projectsId,discId);
+                    var comments = DiscussionComment[0].Comments.length;
+                    var lascomments = DiscussionComment[0].Comments[comments - 1];
+                    $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
                     $('#Message').val(''); 
-                    Materialize.toast('Your Comment Has Been Successfully Added', 4000); 
 				});
             });     
 		});
@@ -399,7 +317,7 @@
                             </div>
                         </div>
                         <div id="comment">
-
+                            
                         </div>
                         <a href="#!" style="text-decoration:underline">Show history of changes</a>
                     </div>
@@ -439,7 +357,7 @@
                                     </li>
                                 </ul>   
                             </fieldset>
-                     
+                            
                         </div>
                         <div class="section">
                             <input type="checkbox" class="filled-in" id="HiddenFromClients"/>

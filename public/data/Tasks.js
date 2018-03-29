@@ -1,7 +1,7 @@
 function getAllTask(projectsId){
     var result;
     $.ajax({
-        url:'http://localhost:3000/projects/'+projectsId+'/Tasks',
+        url:'/projects/'+projectsId+'/Tasks',
         type:'GET',
         async:false,
         contentType:'application/json',
@@ -37,7 +37,7 @@ function appendTasks(projectsId,task_id,taskName,taskAssignee,taskLabel,taskDueD
 }
 function deleteTaskById(projectsId,taskId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId,
         type:'PUT',
         async:false,
         headers:{
@@ -52,7 +52,7 @@ function deleteTaskById(projectsId,taskId){
 }
 function completeTaskById(projectsId,taskId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId,
         type:'PUT',
         async:false,
         headers:{
@@ -67,7 +67,7 @@ function completeTaskById(projectsId,taskId){
 }
 function createTask(projectsId,TaskName,Desc,Assignee,Label,Due_Date){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks',
+        url: '/projects/'+projectsId+'/Tasks',
         type:'POST',
         async:false,
         data:{
@@ -88,7 +88,7 @@ function createTask(projectsId,TaskName,Desc,Assignee,Label,Due_Date){
 function addTaskComment(projectsId,taskId,message){
     var result;
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/comment',
+        url: '/projects/'+projectsId+'/Tasks/'+taskId+'/comment',
         type:'POST',
         async:false,
         data:{
@@ -106,7 +106,7 @@ function addTaskComment(projectsId,taskId,message){
 function readTaskById(projectsId,taskId){
     var result;
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId,
         type:'GET',
         async:false,
         success:function(data){
@@ -123,7 +123,7 @@ function appendSubTasks(_id,Subtask_Name,Assignee){
 function addSubTask(projectsId,taskId,Subtask_Name,Assignee){
     var result;
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask',
+        url: '/projects/'+projectsId+'/Tasks/'+taskId+'/subtask',
         type:'POST',
         async:false,
         data:{
@@ -139,7 +139,7 @@ function addSubTask(projectsId,taskId,Subtask_Name,Assignee){
 }
 function completeSubTasksById(projectsId,taskId,subtaskId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
         type:'PUT',
         async:false,
         headers:{
@@ -154,7 +154,7 @@ function completeSubTasksById(projectsId,taskId,subtaskId){
 }
 function deleteSubTasksById(projectsId,taskId,subtaskId){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
         type:'DELETE',
         async:false,
         dataType : 'json',
@@ -166,7 +166,7 @@ function deleteSubTasksById(projectsId,taskId,subtaskId){
 }
 function editSubTaskById(projectsId,taskId,subtaskId,Subtask_Name,Assignee){
     $.ajax({
-        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
+        url: '/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+subtaskId,
         type:'PUT',
         async:false,
         data:{

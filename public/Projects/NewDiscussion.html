@@ -33,6 +33,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Discussion.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -81,17 +82,7 @@
             $(function () {
 				$('#CreateDisc').on('click', function () {
                     document.location = "ProjectsDetail.html?projectsId="+projectsId;
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions',
-						type:'POST',
-						async:true,
-                        data:{
-                            "Discussion_Name":$('#DiscussionName').val(),
-                            "Discussion_About":$('#DiscussionAbout').val()
-                        },
-						dataType : 'json',
-						
-                    });    
+                    createDiscussion(projectsId,$('#DiscussionName').val(),$('#DiscussionAbout').val());  
 				});
             });
             $('#DiscussionBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
