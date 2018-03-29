@@ -80,15 +80,6 @@ exports.update_a_projects = function(req, res) {
     });
 };
 exports.delete_a_projects = function(req, res) {
-    /*
-    Projects.remove({
-        _id: req.params.projectsId
-    }, function(err, task) {
-        if (err)
-        res.send(err);
-        res.json({ message: 'Projects successfully deleted' });
-    });
-    */
     Projects.findOneAndUpdate({_id: req.params.projectsId}, { $set: { Status: 'Trash' }}, {new: true},function(err, projects) {
         if (err)
         {res.send(err);}
@@ -385,7 +376,6 @@ exports.add_task_comment = function(req,res){
     Tasks.findOneAndUpdate({ _id: req.params.tasksId  }, { $push: { Comments: comment }},{upsert: true,new:true}, function(err,tasks){
         if(err) 
         res.send(err);
-        
         res.json(tasks);
     });   
 }

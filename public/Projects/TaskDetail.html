@@ -35,6 +35,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Tasks.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -103,118 +104,75 @@
             $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId+'&taskId='+taskId);
             
             //GET Task Data
-            $.ajax({
-                url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
-                type:'GET',
-                async:false,
-                success:function(data){
-                    $('#Project_Name').text(data[0].Projects.Project_Name+' '),
-                    $('#Task_Name_Header').text(data[0].Task_Name+' '),
-                    $('#Task_Name_Main').text(data[0].Task_Name),
-                    $('#Task_Name_Modal').text(data[0].Task_Name),
-                    $('#DeleteTask').attr('value',data[0]._id);
-                    $('#Description').text(data[0].Description),
-                    $('#Assignee').val(data[0].Assignee),
-                    $('#Label').val(data[0].Label),
-                    $('#Due_On').val(data[0].Due_Date);
-                    
-                    //GET Subtask
-                    $.each(data[0].Subtask,function(index,val){
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-                        });
-                        if(val.Status != 'Active'){return true}
-                        $('#SubtaskList').append('<p id="Subtask'+val._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+val._id+'" value="'+val._id+'"/><label for="filled-in-box'+val._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+val._id+'">'+val.Assignee+'</span><span id="STN'+val._id+'" class="black-text"> '+val.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+val._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+val._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+val._id+'">Edit</a></li><li><a class="delete-subtask" value="'+val._id+'">Move To Trash</a></li></ul>');
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-                    });
-                    //GET Comments
-                    $.each(data[0].Comments,function(index,val){   
-                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
-                        
-                    });
-                    
-                }
-                
-            });	
-            //Delete
-			$(function () {
-				$("#DeleteTask").click(function() {
-					var TasksIdVal= $(this).attr('value');
-                    
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
-						type:'PUT',
-                        async:false,
-                        headers:{
-                            "header":"Trash"
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            document.location='ProjectsDetail.html?projectsId='+projectsId;  
-						}
-						
-					});
-					
-				});	
+            var Task = readTaskById(projectsId,taskId);
+            
+            $('#Project_Name').text(Task[0].Projects.Project_Name+' '),
+            $('#Task_Name_Header').text(Task[0].Task_Name+' '),
+            $('#Task_Name_Main').text(Task[0].Task_Name),
+            $('#Task_Name_Modal').text(Task[0].Task_Name),
+            $('#DeleteTask').attr('value',Task[0]._id);
+            $('#Description').text(Task[0].Description),
+            $('#Assignee').val(Task[0].Assignee),
+            $('#Label').val(Task[0].Label),
+            $('#Due_On').val(Task[0].Due_Date);
+            
+            //GET Subtask
+            $.each(Task[0].Subtask,function(index,val){
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
+                if(val.Status != 'Active'){return true}
+                $('#SubtaskList').append(appendSubTasks(val._id,val.Subtask_Name,val.Assignee));
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
             });
+            //GET Comments
+            $.each(Task[0].Comments,function(index,val){   
+                $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
+                
+            });
+            //Delete
+            $("#DeleteTask").click(function() {
+                var TasksIdVal= $(this).attr('value');
+                deleteTaskById(projectsId,TasksIdVal);
+                //Callback
+                document.location = 'ProjectsDetail.html?projectsId='+projectsId;
+            });	      
             //Complete Task
             $('#CompleteTask').change(function(){
-                
-                $.ajax({
-                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId,
-                    type:'PUT',
-                    async:false,
-                    headers:{
-                        "header":"Complete"
-                    },
-                    dataType : 'json',
-                    success:function(data){
-                        Materialize.toast($('#Task_Name_Main').text()+' Completed', 2000);
-                    }
-                    
-                });
-                
+                completeTaskById(projectsId,taskId);
+                //Callback
+                Materialize.toast('Task Completed', 700);
+                document.location = 'ProjectsDetail.html?projectsId='+projectsId;
             });
             //Add Comment
             $(function () {
 				$('#AddCommentbtn').on('click', function () {
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/comment',
-						type:'POST',
-						async:true,
-                        data:{
-                            "person":'Iqbalafrianto99',
-                            "message":$('#Message').val()
-                        },
-						dataType : 'json',
-						success:function(data){
-                            var comments = data.Comments.length;
-                            var lascomments = data.Comments[comments - 1];
-                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
-                        }
-                    });  
-                    $('#Message').val(''); 
-                    Materialize.toast('Your Comment Has Been Successfully Added', 2000); 
+                    addTaskComment(projectsId,taskId,$('#Message').val()); 
+                    var TaskComment = readTaskById(projectsId,taskId); 
+                    var comments = TaskComment[0].Comments.length;
+                    var lascomments = TaskComment[0].Comments[comments - 1];
+                    $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");               
+                    $('#Message').val('');  
 				});
             });    
             //Subtask//
-            $('#SubTask').hide();
+            $('#AddSubTaskForm').hide();
             $('#EditSubTask').hide();
             
             $('#ShowSubtaskForm').on('click',function(){
@@ -223,93 +181,65 @@
             });
             $('#CancelSubTask').on('click',function(){
                 $('#AddSubTaskForm').hide();
-               $('#ShowSubtaskForm').show();
+                $('#ShowSubtaskForm').show();
             });
             //Add Subtask
             $(function () {
 				$('#AddSubTaskbtn').on('click', function () {
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask',
-						type:'POST',
-						async:true,
-                        data:{
-                            "Subtask_Name":$('#SubTaskName').val(),
-                            "Assignee":$('#SubTaskAssignee').val()
-                        },
-						dataType : 'json',
-						success:function(data){
-                            var subtask = data.Subtask.length;
-                            var lastsubtask = data.Subtask[subtask - 1];
-                            
-                            $('#SubtaskList').append('<p id="Subtask'+lastsubtask._id+'" class="subtask"><input type="checkbox" class="filled-in complete-subtask" id="filled-in-box'+lastsubtask._id+'" value="'+lastsubtask._id+'"/><label for="filled-in-box'+lastsubtask._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;" id="STA'+lastsubtask._id+'">'+lastsubtask.Assignee+'</span><span class="black-text" id="STN'+lastsubtask._id+'"> '+lastsubtask.Subtask_Name+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask'+lastsubtask._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDSubTask'+lastsubtask._id+'" class="dropdown-content"><li><a id="EditSubTaskbtn" class="EditSubTaskbtn" value="'+lastsubtask._id+'">Edit</a></li><li><a class="delete-subtask" value="'+lastsubtask._id+'">Move To Trash</a></li></ul>'); 
-                            $('.dropdown-button').dropdown({
-                                inDuration: 300,
-                                outDuration: 225,
-                                constrainWidth: false, 
-                                hover: false, 
-                                gutter: 3, 
-                                belowOrigin: true, 
-                                alignment: 'left', 
-                                stopPropagation: false 
-                            });
-                            $('#SubTaskName').val(''); 
-                            Materialize.toast('New Subtask Added', 2000);  
-                        }
-                    });              
+                    addSubTask(projectsId,taskId,$('#SubTaskName').val(),$('#SubTaskAssignee').val());
+                    //Get New Subtask
+                    var TaskSubtask = readTaskById(projectsId,taskId);
+                    //Append New Subtask
+                    var subtask = TaskSubtask[0].Subtask.length;
+                    var lastsubtask = TaskSubtask[0].Subtask[subtask - 1];
+                    $('#SubtaskList').append(appendSubTasks(lastsubtask._id,lastsubtask.Subtask_Name,lastsubtask.Assignee)); 
+                    $('.dropdown-button').dropdown({
+                        inDuration: 300,
+                        outDuration: 225,
+                        constrainWidth: false, 
+                        hover: false, 
+                        gutter: 3, 
+                        belowOrigin: true, 
+                        alignment: 'left', 
+                        stopPropagation: false 
+                    });
+                    $('#SubTaskName').val(''); 
+                    Materialize.toast('New Subtask Added', 2000);  
+                    
 				});
             });  
             //Complete Subtask
             $(document).on('change', ".filled-in.complete-subtask", function() {
                 var SubTasksIdVal= $(this).attr('value');
-                $.ajax({
-                    url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
-                    type:'PUT',
-                    async:false,
-                    headers:{
-                        "header":"Complete"
-                    },
-                    dataType : 'json',
-                    success:function(data){
-                        $('#Subtask'+SubTasksIdVal).hide();
-                        Materialize.toast('Completed', 4000);
-                    }
-                    
-                });     
+                completeSubTasksById(projectsId,taskId,SubTasksIdVal);
+                $('#Subtask'+SubTasksIdVal).hide();
+                Materialize.toast('Completed', 2000);
+                
             });
             
             //Delete Subtask Modal Data
-			$(function () {
-				$(".delete-subtask").click(function() {
-                    
-                    var SubTasksIdVal= $(this).attr('value');
-                    
-                    $('#Subtask_Name_Modal').text($('#STN'+SubTasksIdVal).text());
-                    $('#DeleteSubtask').attr('value',SubTasksIdVal);
-                    $('#MoveToTrashSubTask').modal('open');
-                    
-                });	
+            $(document).on('click', ".delete-subtask", function() {
+                
+                var SubTasksIdVal= $(this).attr('value');
+                
+                $('#Subtask_Name_Modal').text($('#STN'+SubTasksIdVal).text());
+                $('#DeleteSubtask').attr('value',SubTasksIdVal);
+                $('#MoveToTrashSubTask').modal('open');
+                
+                
             });
+            
             //Delete Subtask
-			$(function () {
-				$("#DeleteSubtask").click(function() {
-					var SubTasksIdVal= $(this).attr('value');
-                    
-					$.ajax({
-                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
-                        type:'DELETE',
-                        async:false,
-                        dataType : 'json',
-                        success:function(data){
-                            $('#Subtask'+SubTasksIdVal).hide();
-                            Materialize.toast('Deleted', 2000);
-                            $('#MoveToTrashSubTask').modal('close');
-                        }
-                        
-                    });
-					
-				});	
-            });
+            $("#DeleteSubtask").click(function() {
+                var SubTasksIdVal= $(this).attr('value');
+                deleteSubTasksById(projectsId,taskId,SubTasksIdVal);
+                $('#Subtask'+SubTasksIdVal).hide();
+                Materialize.toast('Deleted', 2000);
+                $('#MoveToTrashSubTask').modal('close');
+            });	
+            
             $(document).on('click', ".EditSubTaskbtn", function() {
+                
                 var SubTasksIdVal= $(this).attr('value');
                 $('#SubtaskNameEdit').val($('#STN'+SubTasksIdVal).text());
                 $('#SubtaskAssigneeEdit').val($('#STA'+SubTasksIdVal).text());
@@ -317,27 +247,20 @@
                 $('#handelEditSubtask').attr('value',SubTasksIdVal);
                 $('#Subtask'+SubTasksIdVal).hide();
                 $('#EditSubTask').show();
-                   
+                
             });
-           $(function(){
-               $('#handelEditSubtask').on('click',function(){
-                var SubTasksIdVal= $(this).attr('value');
-                $.ajax({
-                        url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+taskId+'/subtask/'+SubTasksIdVal,
-                        type:'PUT',
-                        async:false,
-                        data:{
-                            "Subtask_Name":$('#SubtaskNameEdit').val(),
-                            "Assignee":$('#SubtaskAssigneeEdit').val()
-                        },
-                        dataType : 'json',
-                        success:function(data){
-                           document.location.reload();
-                        }
-                        
-                    });  
-               });
-           });
+            //Edit Subtask
+            $(function(){
+                $('#handelEditSubtask').on('click',function(){
+                    var SubTasksIdVal= $(this).attr('value');
+                    editSubTaskById(projectsId,taskId,SubTasksIdVal,$('#SubtaskNameEdit').val(),$('#SubtaskAssigneeEdit').val());
+                    $('#STN'+SubTasksIdVal).text($('#SubtaskNameEdit').val());
+                    $('#STA'+SubTasksIdVal).text($('#SubtaskAssigneeEdit').val());
+                    $('#Subtask'+SubTasksIdVal).show();
+                    $('#EditSubTask').hide();
+                    
+                });
+            });
             $('#CancelEditSubTask').on('click',function(){
                 var SubTasksIdVal= $(this).attr('value');
                 $('#Subtask'+SubTasksIdVal).show();
@@ -451,10 +374,7 @@
                         <!--Subtask List-->
                         <h6><b>Subtasks</b></h6>
                         <div id="SubtaskList">
-                            <p id="Subtask" class="subtask">
-                                <input type="checkbox" class="filled-in" id="filled-in-box"/>
-                                <label for="filled-in-box"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">iqbalafrianto99</span> <span><a href="TaskDetail.html"  class="black-text">Task Name</a></span><span>-Jan 31</span>.<span class="green-text">In Progress</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDSubTask"><i class="material-icons" >more_horiz</i></a>
-                            </p>
+                            
                         </div>
                         <ul id="DDSubTask" class="dropdown-content">
                             <li><a id="EditSubTaskbtn">Edit</a></li>

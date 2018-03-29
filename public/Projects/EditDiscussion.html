@@ -33,6 +33,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Discussion.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -79,37 +80,18 @@
 			}
             var projectsId = getUrlVars()['projectsId'];
             var discId = getUrlVars()['discId'];
+            var Discussion = readDiscussionById(projectsId,discId);
             $('#DiscBack').attr('href','DiscussionDetail.html?projectsId='+projectsId+'&discId='+discId);
             //GET discussion data
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    $('#Discussion_Name').val(data[0].Discussion_Name);
-                    $('#Discussion_About').text(data[0].Discussion_About);
-                    
-                }
-                
-            });
+            
+            $('#Discussion_Name').val(Discussion[0].Discussion_Name);
+            $('#Discussion_About').text(Discussion[0].Discussion_About);
+            
             //Edit Discussion
             $(function () {
 				$('#EditDisc').on('click', function () {
                     document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                    
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Discussions/'+discId,
-						type:'PUT',
-						async:true,
-                        data:{
-                            "Discussion_Name":$('#Discussion_Name').val(),
-                            "Discussion_About":$('#Discussion_About').val()
-                        },
-						dataType : 'json',
-						
-                    });
-                    
+                    updateDiscussionById(projectsId,discId,$('#Discussion_Name').val(),$('#Discussion_About').val());
 				});
 			});
         });

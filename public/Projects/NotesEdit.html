@@ -41,6 +41,7 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Notes.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -87,36 +88,19 @@
             }
             var projectsId = getUrlVars()['projectsId'];
             var notesId = getUrlVars()['notesId'];
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    
-                    $('#Note_Title').val(data[0].Note_Title);
-                    $('#Content').val(data[0].Content);
-                }
-                
-            });
+            
+            //Data
+            var Notes = readNotesById(projectsId,notesId)
+            
+            $('#Note_Title').val(Notes[0].Note_Title);
+            $('#Content').val(Notes[0].Content);
+            
             $('#NoteBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $('#NoteCancel').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $(function () {
 				$('#NoteEdit').on('click', function () {
+                    updateNotesById(projectsId,notesId,$('#Note_Title').val(),$('#Content').val());
                     document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                    
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
-						type:'PUT',
-						async:true,
-                        data:{
-                            "Note_Title":$('#Note_Title').val(),
-                            "Content":$('#Content').val()
-                        },
-						dataType : 'json',
-						
-                    });
-                    
 				});
 			});            
         });
@@ -213,8 +197,8 @@
                                 </p>
                             </div>
                             <div class="col s12">
-                                    <input type="checkbox" class="filled-in" id="HiddenClients">
-                                    <label for="HiddenClients">Hidden From Clients</label>
+                                <input type="checkbox" class="filled-in" id="HiddenClients">
+                                <label for="HiddenClients">Hidden From Clients</label>
                             </div>
                         </div>
                     </div>

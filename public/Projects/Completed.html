@@ -34,6 +34,7 @@
 <body>
 	<script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+	<script type="text/javascript" src="../data/Projects.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$(".button-collapse").sideNav({menuWidth: 220});
@@ -49,121 +50,65 @@
 			}
 			);
 			$('.modal').modal();
-			$.ajax({
-				url:'http://localhost:3000/projects',
-				type:'GET',
-				async:false,
-				contentType:'application/json',
-				headers:{
-					"projects":"COMPLETE"
-				},
-				success:function(data){
-					
-					var i = 0;
-					$.each(data,function(key,val){
-						$('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-						
-						$('#CompletedProjects').append("<tr><td class='center'>"+data[i].Project_Name+"</td><td class='center'>"+data[i].Client_Company+"</td><td class='center'>Jan 29,2018</td><td class='center'><a href='#Reopen' class='btn blue reopen' data-target='Reopen' value='"+data[i]._id+"' style='text-transform:unset'>Reopen</a>&nbsp;<a href='#MoveToTrash' class='btn red delete' value='"+data[i]._id+"'><i class='material-icons'>delete</i></a></td></tr>");
-						
-						$('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-						i++;
-						
-					});
-				}
+			var CompleteProjects = getAllProjects('COMPLETE');
+			var Projects = getAllProjects();
+			$.each(CompleteProjects,function(key,val){
+				$('.dropdown-button').dropdown({
+					inDuration: 300,
+					outDuration: 225,
+					constrainWidth: false, 
+					hover: false, 
+					gutter: 3, 
+					belowOrigin: true, 
+					alignment: 'left', 
+					stopPropagation: false 
+				});
+				
+				$('#CompletedProjects').append("<tr><td class='center' id='PN"+val._id+"'>"+val.Project_Name+"</td><td class='center'>"+val.Client_Company+"</td><td class='center'>Jan 29,2018</td><td class='center'><a href='#Reopen' class='btn blue reopen' data-target='Reopen' value='"+val._id+"' style='text-transform:unset'>Reopen</a>&nbsp;<a href='#MoveToTrash' class='btn red delete' value='"+val._id+"'><i class='material-icons'>delete</i></a></td></tr>");
+				
+				$('.dropdown-button').dropdown({
+					inDuration: 300,
+					outDuration: 225,
+					constrainWidth: false, 
+					hover: false, 
+					gutter: 3, 
+					belowOrigin: true, 
+					alignment: 'left', 
+					stopPropagation: false 
+				});				
 			});
+			
+			
 			//Reopen Modal Data
 			$(function () {
 				$(".btn.blue.reopen").click(function() {
 					var ProjectsIdVal= $(this).attr('value');
-					
-					
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
-						type:'GET',
-						async:true,
-						success:function(data){
-							$('#Reopen').modal('open');
-							$('#Reopen_Project_Name').text(data.Project_Name);
-							$('#Reopen_Projects').attr('value',data._id);
-						}
-						
-					});
-					
+					$('#Reopen').modal('open');
+					$('#Reopen_Project_Name').text($('#PN'+ProjectsIdVal).text());
+					$('#Reopen_Projects').attr('value',ProjectsIdVal);
 				});	
 			});
 			//Delete Modal Data
 			$(function () {
 				$(".btn.red.delete").click(function() {
 					var ProjectsIdVal= $(this).attr('value');
-					
-					
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
-						type:'GET',
-						async:true,
-						success:function(data){
-							$('#MoveToTrash').modal('open');
-							$('#Delete_Project_Name').text(data.Project_Name);
-							$('#Delete_Project').attr('value',data._id);
-						}
-						
-					});
-					
+					$('#MoveToTrash').modal('open');
+					$('#Delete_Project_Name').text($('#PN'+ProjectsIdVal).text());
+					$('#Delete_Project').attr('value',ProjectsIdVal);
 				});	
 			});
 			//Reopen
 			$(function () {
 				$("#Reopen_Projects").click(function() {
 					var ProjectsIdVal= $(this).attr('value');
-					
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
-						type:'PUT',
-						async:true,
-						data:{
-							"Label":"ONGOING"
-						},
-						success:function(data){
-							document.location = "Projects.html";
-						}
-						
-					});
-					
+					completeOrReopenProjects(ProjectsIdVal,'ONGOING');
 				});	
 			});
 			//Delete
 			$(function () {
 				$("#Delete_Project").click(function() {
 					var ProjectsIdVal= $(this).attr('value');
-					
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+ProjectsIdVal,
-						type:'DELETE',
-						async:true,
-						success:function(data){
-							Materialize.toast(data.message, 4000,'',function(){document.location = "Projects.html"});
-						}
-						
-					});
-					
+					deleteProjects(ProjectsIdVal);
 				});	
 			});
 		});

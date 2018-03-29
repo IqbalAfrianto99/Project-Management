@@ -40,6 +40,11 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Projects.js"></script>
+    <script type="text/javascript" src="../data/Tasks.js"></script>
+    <script type="text/javascript" src="../data/Files.js"></script>
+    <script type="text/javascript" src="../data/Discussion.js"></script>
+    <script type="text/javascript" src="../data/Notes.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -115,50 +120,33 @@
             $('#AddTask').attr('href','AddTask.html?projectsId='+projectsId);
             $('#EditTask').attr('href','EditTask.html?projectsId='+projectsId);
             
+            //REQUEST DATA
+            var Projects = readProjects(projectsId);
+            var Tasks = getAllTask(projectsId);
+            var Files = getAllFiles(projectsId);
+            var Discussions = getAllDiscussion(projectsId);
+            var Notes = getAllNotes(projectsId);
+            
             //GET PROJECT DATA
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    $('#Project_Name').text(data.Project_Name);
-                    $('#Client_Company').text(data.Client_Company);
-                    $('#Category').text(data.Category);
-                    $('#Label').text(data.Label);
-                    
-                }
-            });
+            $('#Project_Name').text(Projects.Project_Name);
+            $('#Client_Company').text(Projects.Client_Company);
+            $('#Category').text(Projects.Category);
+            $('#Label').text(Projects.Label);
+            
+            
             //GET NOTES BY PROJECTS ID
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Notes',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+data[i]._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='word-wrap: break-word'><span class='card-title'><b>"+checkStringLength(data[i].Note_Title,60)+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+checkStringLength(data[i].Content,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
-                        i++;
-                    });
-                    
-                } 
+            
+            $.each(Notes,function(key,val){
+                $('#NotesCard').append("<div class='col s12 m6 l3'><div class='card' style='background-color:#ffface;'><a href='NotesDetail.html?notesId="+val._id+"&projectsId="+projectsId+"'><div class='card-content black-text' style='word-wrap: break-word'><span class='card-title'><b>"+checkStringLength(val.Note_Title,60)+"</b></span><span>by <span>iqbalafrianto</span></span><p>"+checkStringLength(val.Content,125)+"</p></div> </a><div class='card-action' style='padding-top:10px;padding-bottom:10px'><p>Active <span>3 Days Ago</span></p></div></div></div>");
             });
+            
             //GET DISCUSSION BY PROJECT
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Discussions',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('#DiscsussionByProject').append("<div class='divider'></div><div class='section'><a href='DiscussionDetail.html?discId="+data[i]._id+"&projectsId="+projectsId+"'>"+data[i].Discussion_Name+" (4)</a><p>hendysantoso911:halo<span style='float: right'>3 days ago</span></p></div>");
-                        i++;
-                    });
-                    
-                } 
+            
+            $.each(Discussions,function(key,val){
+                $('#DiscsussionByProject').append("<div class='divider'></div><div class='section'><a href='DiscussionDetail.html?discId="+val._id+"&projectsId="+projectsId+"'>"+val.Discussion_Name+" (4)</a><p>hendysantoso911:halo<span style='float: right'>3 days ago</span></p></div>");   
             });
+            
+            
             $('#progress').hide();
             //INPUT FILE
             $(function () {
@@ -167,193 +155,70 @@
                     $('#progress').show();
                     var data = new FormData();
                     data.append('myImage',$('#FileInput')[0].files[0]);
-                    $.ajax({
-                        url: 'http://localhost:3000/projects/'+projectsId+'/Files',
-                        data: data,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        method: 'POST',
-                        type: 'POST', // For jQuery < 1.9
-                        error: function(error){
-                            $('#progress').hide();
-                            if(error.responseText == 'Empty Field'){
-                                alert('Field Cannot Be Empty');
-                                
-                                
-                            }
-                            else if(error.responseText == 'NoExt'){
-                                alert('Unsupported Format');
-                                
-                            }
-                            else{
-                                alert('File Too Large');
-                                
-                            }
-                        },
-                        success:function(){
-                            setTimeout(function() {
-                                $('#progress').hide();
-                                Materialize.toast('File Uploaded', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});
-                            }, 4000);
-                            
-                        }
-                    });
+                    uploadFiles(projectsId,data);
                 });
             });
-            //Check File type
-            function isImage(string) {
-                // var ext = string.substr(string.lastIndexOf('.') + 1);
-                var ext = string.split('.').pop();
-                if(/jpeg|jpg|png|gif/i.test(ext)){
-                    return '../ProjectUploads/'+projectsId+'/'+string;
-                }
-                else if(/pdf/i.test(ext)){
-                    return './icons/pdf.png';
-                }
-                else if(/docx|doc/i.test(ext)){
-                    return './icons/docx.png';
-                }
-                else if(/xlsx|xls/i.test(ext)){
-                    return './icons/xls.png';
-                }
-                else if(/html|js|php|css/i.test(ext)){
-                    return './icons/code.png';
-                }
-                else if(/mp3/i.test(ext)){
-                    return './icons/mp3.png';
-                }
-                else if(/rar/i.test(ext)){
-                    return './icons/xls.png';
-                }
-                else if(/zip/i.test(ext)){
-                    return './icons/xls.png';
-                }
-                else if(/exe/i.test(ext)){
-                    return './icons/exe.png';
-                }
-            }
-            function checkStringLength(text,length){
-                if (text == null) {
-                    return "";
-                }
-                if (text.length <= length) {
-                    return text;
-                }
-                text = text.substring(0, length);
-                return text + "...";
-            }
             
-            
-            //GET FILES BY PROJECT
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Files',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    
-                    $.each(data,function(key,val){
-                        $('.dropdown-button').dropdown({
-                            inDuration: 300,
-                            outDuration: 225,
-                            constrainWidth: false, 
-                            hover: false, 
-                            gutter: 3, 
-                            belowOrigin: true, 
-                            alignment: 'left', 
-                            stopPropagation: false 
-                        });
-                        $('.modal').modal();
-                        $('#FilesCard').append("<div class='col s12 m6 l3'><div class='card'><div class='card-image'><img src='"+isImage(data[key].File_Name)+"' class='panjul'><a class='btn-floating halfway-fab waves-effect waves-light red dropdown-button' data-activates='download"+data[key]._id+"'><i class='material-icons'>more_horiz</i></a><ul id='download"+data[key]._id+"' class='dropdown-content'><li><a href='../ProjectUploads/"+projectsId+"/"+data[key].File_Name+"' download='"+data[key].File_Name+"'>Download</a></li><li><a href='javascript:;'>Hidden From Clients</a></li><li class='divider'></li><li><a href='#MoveToTrashFiles"+data[key]._id+"' class='modal-trigger'>Move to Trash</a></li></ul><!-- Move To Trash Files Modal --><div class='modal' id='MoveToTrashFiles"+data[key]._id+"'><div class='modal-content'><div class='container'><h5>Move '"+data[key].File_Name+"' to Trash?</h5><h6>The item will remain in Trash for 30 days. To remove it permanently, go to Trash and empty it.</h6><div class='row'><a href='javascript:;' class='btn red fordel' style='text-transform: unset' value='"+data[key]._id+"'>Move to Trash</a>&nbsp;<a href='javascript:;' class='btn grey lighten-1 modal-close' style='text-transform: unset'>Cancel</a></div></div></div></div><!-- Move To Trash Files Modal --></div><div class='card-content'><h5>"+checkStringLength(data[key].File_Name,12)+"</h5><span>by iqbalafrianto on <span>"+data[key].Date_Display+"</span></span></div></div></div>");
-                        $('.dropdown-button').dropdown({
-                            inDuration: 300,
-                            outDuration: 225,
-                            constrainWidth: false, 
-                            hover: false, 
-                            gutter: 3, 
-                            belowOrigin: true, 
-                            alignment: 'left', 
-                            stopPropagation: false 
-                        });
-                        $('.modal').modal();
-                        key++;
-                    });
-                    
-                } 
+            //GET FILES BY PROJECT 
+            $.each(Files,function(key,val){
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
+                $('.modal').modal();
+                $('#FilesCard').append(appendFiles(projectsId,val.File_Name,val._id,val.Date_Display));
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
+                $('.modal').modal();
+                
             });
-            
             //MOVE FILE TO TRASH
             $(function () {
                 $(".btn.red.fordel").click(function() {
                     var filesId = $(this).attr('value');
-                    
+                    deleteFiles(projectsId,filesId);
                     $('#MoveToTrashFiles'+filesId).modal('close');
-                    Materialize.toast('File Deleted', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Files/'+filesId,
-						type:'PUT',
-						async:true,
-                        headers:{
-                            "movetotrash":"Trash"
-                        },
-						dataType : 'json',
-						
-                    }); 
+                    Materialize.toast('File Deleted', 2000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});
+					
                 });	
             });
-            function isEmpty(string){
-                if(!string){
-                    return "";
-                }
-                else{
-                    return string;
-                }
-                
-            }
-            function isEmptyAssignee(string){
-                if(!string){
-                    return "not set";
-                }
-                else{
-                    return string;
-                }
-                
-            }
             //GET Task BY PROJECT
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Tasks',
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    var i = 0;
-                    $.each(data,function(key,val){
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-                        $('#ListOfTask').append('<p id="checkboxarea'+data[i]._id+'" class="task"><input type="checkbox" class="filled-in complete-task" id="filled-in-box'+data[i]._id+'" value="'+data[i]._id+'"/><label for="filled-in-box'+data[i]._id+'"><span class="blue lighten-1 black-text" style="padding:3px;border-radius:6px;">'+isEmptyAssignee(data[i].Assignee)+'</span> <span><a id="TN'+data[i]._id+'" href="TaskDetail.html?projectsId='+projectsId+'&taskId='+data[i]._id+'"  class="black-text">'+isEmpty(data[i].Task_Name)+'</a></span><span>-'+isEmpty(data[i].Due_Date)+'</span>.<span class="green-text">'+isEmpty(data[i].Label)+'</span></label>&nbsp;<a class="btn btn-flat dropdown-button" data-activates="DDTask'+data[i]._id+'"><i class="material-icons" >more_horiz</i></a></p><ul id="DDTask'+data[i]._id+'" class="dropdown-content"><li><a id="EditTask" href="EditTask.html?projectsId='+projectsId+'&taskId='+data[i]._id+'">Edit</a></li><li><a class="delete-task" value="'+data[i]._id+'">Move To Trash</a></li></ul>');
-                        i++;
-                        $('.dropdown-button').dropdown({
-							inDuration: 300,
-							outDuration: 225,
-							constrainWidth: false, 
-							hover: false, 
-							gutter: 3, 
-							belowOrigin: true, 
-							alignment: 'left', 
-							stopPropagation: false 
-						});
-                    });
-                    
-                } 
+            $.each(Tasks,function(key,val){
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
+                $('#ListOfTask').append(appendTasks(projectsId,val._id,val.Task_Name,val.Assignee,val.Label,val.Due_Date));
+                $('.dropdown-button').dropdown({
+                    inDuration: 300,
+                    outDuration: 225,
+                    constrainWidth: false, 
+                    hover: false, 
+                    gutter: 3, 
+                    belowOrigin: true, 
+                    alignment: 'left', 
+                    stopPropagation: false 
+                });
             });
             //Delete Modal Data
 			$(function () {
@@ -364,48 +229,26 @@
                     $('#MoveToTrashTask').modal('open');
 				});	
             });
-            //Delete
+            //Delete Task
 			$(function () {
 				$("#Delete_Task").click(function() {
 					var TasksIdVal= $(this).attr('value');
-
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
-						type:'PUT',
-                        async:false,
-                        headers:{
-                            "header":"Trash"
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            $('#MoveToTrashTask').modal('close');
-                            $('#checkboxarea'+TasksIdVal).hide();
-							Materialize.toast($('#TN'+TasksIdVal).text()+'Deleted', 4000);
-						}
-						
-					});
-					
+                    deleteTaskById(projectsId,TasksIdVal);
+                    //Callback
+                    $('#MoveToTrashTask').modal('close');
+                    $('#checkboxarea'+TasksIdVal).hide();
+                    Materialize.toast($('#TN'+TasksIdVal).text()+' Deleted', 4000);
 				});	
             });
             //Complete Task
             $('.filled-in.complete-task').change(function(){
                 var TasksIdVal= $(this).attr('value');
-                $.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Tasks/'+TasksIdVal,
-						type:'PUT',
-                        async:false,
-                        headers:{
-                            "header":"Complete"
-                        },
-                        dataType : 'json',
-						success:function(data){
-                            $('#checkboxarea'+TasksIdVal).hide();
-							Materialize.toast($('#TN'+TasksIdVal).text()+' Completed', 4000);
-						}
-						
-					});
+                completeTaskById(projectsId,TasksIdVal);
+                //Callback
+                $('#checkboxarea'+TasksIdVal).hide();
+                Materialize.toast($('#TN'+TasksIdVal).text()+' Completed', 2000);
             });
-           
+            
             $('.btn.btn-flat').hide();
             $('.task').on('mouseenter', function () {
                 $(this).find(".btn.btn-flat").show();
@@ -563,10 +406,10 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs red-text text-darken-2 default">
-                    <li class="tab col s1"><a href="#Tasks" style="text-transform:unset">Tasks</a></li>
+                    <li class="tab col s1"><a href="#Tasks"  class="active" style="text-transform:unset">Tasks</a></li>
                     <li class="tab col s2"><a href="#Discussions" style="text-transform:unset">Discussion</a></li>
                     <li class="tab col s1"><a href="#Files" style="text-transform:unset">Files</a></li>
-                    <li class="tab col s2"><a href="#Notes"  class="active" style="text-transform:unset">Notes</a></li>
+                    <li class="tab col s2"><a href="#Notes" style="text-transform:unset">Notes</a></li>
                     <li class="tab col s1"><a href="#Time" style="text-transform:unset">Time</a></li>
                     <li class="tab col s2"><a href="#Expenses" style="text-transform:unset">Expenses</a></li>
                     <li class="tab col s3"><a href="#Activity" style="text-transform:unset">Activity</a></li>

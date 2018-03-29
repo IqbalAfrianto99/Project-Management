@@ -41,6 +41,8 @@
 <body>
     <script type="text/javascript" src="../Jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../materialize/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../data/Projects.js"></script>
+    <script type="text/javascript" src="../data/Notes.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $(".button-collapse").sideNav({menuWidth: 220});
@@ -113,82 +115,47 @@
                 }
                 
             });
+            //Data
+            var Notes = readNotesById(projectsId,notesId);
+            var Projects = getAllProjects();
             //GET NOTE DATA
-            $.ajax({
-                url:'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
-                type:'GET',
-                async:false,
-                contentType:'application/json',
-                success:function(data){
-                    
-                    $('#Note_Title').val(data[0].Note_Title);
-                    $("[id=NoteName]").text(data[0].Note_Title);
-                    $('#Content').val(data[0].Content);  
-                    var i;
-                    var Comments=data[0].Comments.length;
-                    for(i=0;i <= Comments;i++){
-                        var message = data[0].Comments[i].message;
-                        var person = data[0].Comments[i].person;
-                        $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+person+" </b><span>8 days ago</span></h6><p class='message'>"+message+"</p></div>");
-                    }
-                }
+            
+            
+            $('#Note_Title').val(Notes[0].Note_Title);
+            $("[id=NoteName]").text(Notes[0].Note_Title);
+            $('#Content').val(Notes[0].Content); 
+            //fetch comment 
+            $.each(Notes[0].Comments,function(index,val){   
+                $('#comment').prepend("<div class='col s12 section'><h6><b  class='person'>"+val.person+" </b><span>8 days ago</span></h6><p class='message'>"+val.message+"</p></div>");
                 
             });
             //GET Projects
-            $.ajax({
-                url:'http://localhost:3000/projects',
-				type:'GET',
-				async:false,
-				contentType:'application/json',
-                success:function(data){
-                    
-                    $.each(data,function(key,val){
-                        if(data[key]._id == projectsId){return true;}
-                        $('select').material_select();
-                        $('#ProjectDropdown').append("<option value='"+ data[key]._id+"'>"+data[key].Project_Name +"</option>");
-                        $('select').material_select();
-                        key++;
-                    });
-                } 
+            
+            $.each(Projects,function(key,val){
+                if(val._id == projectsId){return true;}
+                $('select').material_select();
+                $('#ProjectDropdown').append("<option value='"+ val._id+"'>"+val.Project_Name +"</option>");
+                $('select').material_select();
             });
+            
             $('#NoteBack').attr('href','ProjectsDetail.html?projectsId='+projectsId);
             $('#NoteEdit').attr('href','NotesEdit.html?projectsId='+projectsId+'&notesId='+notesId);
             //Move note to trash
             $(function () {
 				$('#TrashNote').on('click', function () {
-                    document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                    
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
-						type:'PUT',
-						async:true,
-                        headers:{
-                            "movetotrash":"Trash"
-                        },
-						dataType : 'json',
-						
-                    });
-                    
+                    deleteNotesById(projectsId,notesId);
+                    document.location = "ProjectsDetail.html?projectsId="+projectsId; 
 				});
             });
             //ADD Comment 
             $(function () {
 				$('#AddComment').on('click', function () {
-					$.ajax({
-						url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId+'/comment',
-						type:'POST',
-						async:true,
-                        data:{
-                            "person":'Iqbalafrianto99',
-                            "message":$('#Message').val()
-                        },
-						dataType : 'json',
-						success:function(data){
-                            var comments = data.Comments.length;
-                            var lascomments = data.Comments[comments - 1];
-                            $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
-                        }
-                    });  
+                    var addComment = addNoteComment(projectsId,notesId,'Iqbalafrianto99',$('#Message').val());
+					
+                    var comments = addComment.Comments.length;
+                    var lascomments = addComment.Comments[comments - 1];
+                    $('#comment').prepend("<div class='col s12 section'><h6><b>"+lascomments.person+" </b><span>8 days ago</span></h6><p>"+lascomments.message+"</p></div>");  
+                    
                     $('#Message').val(''); 
                     Materialize.toast('Your Comment Has Been Successfully Added', 4000); 
 				});
@@ -208,32 +175,14 @@
                             
                             //COPY Note
                             //Make New Note
-                            $.ajax({
-                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes',
-                                type:'POST',
-                                async:false,
-                                data: {
-                                    "Note_Title":$('#Note_Title').val(),
-                                    "Content": $('#Content').val(),
-                                },
-                                dataType : 'json',
-                                success:function(data){
-                                    var id = data._id;
-                                    for(i=0;i<length;i++)
-                                    { 
-                                        $.ajax({
-                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes/'+id+'/comment',
-                                            type:'POST',
-                                            async:true,
-                                            data:{
-                                                "person":person2.eq(i).text(),
-                                                "message":message2.eq(i).text()
-                                            },
-                                            dataType : 'json',   
-                                        });  
-                                    }                                     
-                                }
-                            });
+                            var NewNote = createNote(ProjectsDropdown,$('#Note_Title').val(),$('#Content').val());
+                            
+                            var id = NewNote._id;
+                            for(i=0;i<length;i++)
+                            { 
+                                addNoteComment(ProjectsDropdown,id,person2.eq(i).text(),message2.eq(i).text());
+                            }                                     
+                            
                             //Closing Modals and making toast
                             $('#Move').modal('close');
                             Materialize.toast('Note Copied Successfully', 4000);
@@ -242,48 +191,20 @@
                             
                             //Move Note
                             //Make New Note
-                            $.ajax({
-                                url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes',
-                                type:'POST',
-                                async:false,
-                                data: {
-                                    "Note_Title":$('#Note_Title').val(),
-                                    "Content": $('#Content').val(),
-                                },
-                                dataType : 'json',
-                                success:function(data){
-                                    var id = data._id;
-                                    for(i=0;i<length;i++)
-                                    { 
-                                        $.ajax({
-                                            url: 'http://localhost:3000/projects/'+ProjectsDropdown+'/Notes/'+id+'/comment',
-                                            type:'POST',
-                                            async:true,
-                                            data:{
-                                                "person":person2.eq(i).text(),
-                                                "message":message2.eq(i).text()
-                                            },
-                                            dataType : 'json',   
-                                        });  
-                                    }                                     
-                                }
-                            });
+                            var NewNote = createNote(ProjectsDropdown,$('#Note_Title').val(),$('#Content').val());
+                            
+                            var id = NewNote._id;
+                            for(i=0;i<length;i++)
+                            { 
+                                addNoteComment(ProjectsDropdown,id,person2.eq(i).text(),message2.eq(i).text());
+                            }  
                             //Delete this Note
                             
-                                document.location = "ProjectsDetail.html?projectsId="+projectsId;
-                                
-                                $.ajax({
-                                    url: 'http://localhost:3000/projects/'+projectsId+'/Notes/'+notesId,
-                                    type:'PUT',
-                                    async:true,
-                                    headers:{
-                                        "movetotrash":"Trash"
-                                    },
-                                    dataType : 'json',
-                                    
-                                });
-                                
-                           
+                            document.location = "ProjectsDetail.html?projectsId="+projectsId;
+                            
+                            deleteNotesById(projectsId,notesId)
+                            
+                            
                             //Closing Modals and making toast
                             $('#Move').modal('close');
                             Materialize.toast('Note Moved!', 4000,'',function(){document.location = "ProjectsDetail.html?projectsId="+projectsId;});   
